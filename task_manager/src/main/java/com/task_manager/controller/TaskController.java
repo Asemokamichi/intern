@@ -4,7 +4,6 @@ import com.task_manager.dto.*;
 import com.task_manager.entity.Resolution;
 import com.task_manager.entity.Task;
 import com.task_manager.service.TaskService;
-import com.task_manager.util.Convert;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -22,8 +21,11 @@ import java.util.List;
 @RequestMapping("/tasks")
 public class TaskController {
 
-    @Autowired
     private TaskService taskService;
+
+    public TaskController(TaskService taskService) {
+        this.taskService = taskService;
+    }
 
     @Operation(summary = "Создание задачи", description = """
             Создает новую задачу на основе предоставленных данных.
@@ -38,7 +40,7 @@ public class TaskController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Задача успешно создана", content = @Content(
                     mediaType = "application/json",
-                    schema = @Schema(implementation = TaskDto.class)
+                    schema = @Schema(implementation = Task.class)
             )),
             @ApiResponse(responseCode = "400", description = "Некорректные данные запроса", content = @Content),
             @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера", content = @Content)
@@ -49,7 +51,7 @@ public class TaskController {
 
         URI location = URI.create(String.format("/tasks/%d", task.getId()));
 
-        return ResponseEntity.created(location).body(new TaskDto(task));
+        return ResponseEntity.created(location).body(task);
     }
 
 
@@ -57,7 +59,7 @@ public class TaskController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Список задач успешно получен", content = @Content(
                     mediaType = "application/json",
-                    schema = @Schema(implementation = TaskDto.class)
+                    schema = @Schema(implementation = Task.class)
             )),
             @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера", content = @Content)
     })
@@ -67,14 +69,14 @@ public class TaskController {
 
         if (tasks.isEmpty()) return ResponseEntity.ok("На данный момент актуальных задач отсутствует");
 
-        return ResponseEntity.ok(Convert.toDto(tasks, TaskDto::new));
+        return ResponseEntity.ok(tasks);
     }
 
     @Operation(summary = "Получение задачи по ID", description = "Возвращает задачу на основе указанного ID.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Задача успешно получена", content = @Content(
                     mediaType = "application/json",
-                    schema = @Schema(implementation = TaskDto.class)
+                    schema = @Schema(implementation = Task.class)
             )),
             @ApiResponse(responseCode = "404", description = "Задача не найдена", content = @Content),
             @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера", content = @Content)
@@ -83,7 +85,7 @@ public class TaskController {
     public ResponseEntity<?> getTask(@PathVariable Long taskId) {
         Task task = taskService.getTask(taskId);
 
-        return ResponseEntity.ok(new TaskDto(task));
+        return ResponseEntity.ok(task);
     }
 
     @Operation(summary = "Продление дедлайна задачи", description = """
@@ -94,7 +96,7 @@ public class TaskController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Дедлайн задачи успешно продлен", content = @Content(
                     mediaType = "application/json",
-                    schema = @Schema(implementation = TaskDto.class)
+                    schema = @Schema(implementation = Task.class)
             )),
             @ApiResponse(responseCode = "400", description = "Некорректные данные запроса", content = @Content),
             @ApiResponse(responseCode = "404", description = "Задача не найдена", content = @Content),
@@ -104,7 +106,7 @@ public class TaskController {
     public ResponseEntity<?> dateExtension(@PathVariable Long taskId, @RequestBody DateExtensionDto dateExtensionDto) {
         Task task = taskService.dateExtension(taskId, dateExtensionDto);
 
-        return ResponseEntity.ok(new TaskDto(task));
+        return ResponseEntity.ok(task);
     }
 
     @Operation(summary = "Удаление задачи", description = "Позволяет удалить задачу по заданному ID.")
@@ -142,7 +144,7 @@ public class TaskController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Комментарии успешно получены", content = @Content(
                     mediaType = "application/json",
-                    array = @ArraySchema(schema = @Schema(implementation = ResolutionDto.class))
+                    array = @ArraySchema(schema = @Schema(implementation = Resolution.class))
             )),
             @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера", content = @Content)
     })
@@ -150,7 +152,7 @@ public class TaskController {
     public ResponseEntity<?> getCommentsToTask(@PathVariable Long taskId) {
         List<Resolution> resolutions = taskService.getCommentsToTask(taskId);
 
-        return ResponseEntity.ok(Convert.toDto(resolutions, ResolutionDto::new));
+        return ResponseEntity.ok(resolutions);
     }
 
     @Operation(summary = "Завершение задачи", description = """
@@ -238,14 +240,14 @@ public class TaskController {
     public ResponseEntity<?> getActiveTasksByAssignee(@PathVariable Long userId) {
         List<Task> tasks = taskService.getActiveTasksByAssignee(userId);
 
-        return ResponseEntity.ok(Convert.toDto(tasks, TaskDto::new));
+        return ResponseEntity.ok(tasks);
     }
 
     @GetMapping("/createdBy/{authorId}")
     public ResponseEntity<?> getActiveTasksByAuthor(@PathVariable Long authorId) {
         List<Task> tasks = taskService.getActiveTasksByAuthor(authorId);
 
-        return ResponseEntity.ok(Convert.toDto(tasks, TaskDto::new));
+        return ResponseEntity.ok(tasks);
     }
 
 }

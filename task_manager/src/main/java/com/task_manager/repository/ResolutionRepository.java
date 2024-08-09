@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ResolutionRepository extends JpaRepository<Resolution, Long> {
@@ -18,4 +19,7 @@ public interface ResolutionRepository extends JpaRepository<Resolution, Long> {
     boolean existsByUserAndTaskWithStatusSubmittedOrApproved(@Param("user") User user, @Param("task") Task task);
 
     List<Resolution> findByTask(Task task);
+
+
+    Optional<Resolution> findFirstByTaskOrderByIdDesc(Task task);
 }

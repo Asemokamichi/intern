@@ -1,5 +1,6 @@
 package com.task_manager.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.task_manager.dto.AddResolutionDto;
 import com.task_manager.dto.CreateTaskDto;
 import com.task_manager.dto.DateExtensionDto;
@@ -70,5 +71,5 @@ public interface TaskService {
 //    Получение комментариев к задаче
     List<Resolution> getCommentsToTask(Long id);
 
-
+//    void checkResponsibility(List<Responsible> responsibles, Long id);
 }

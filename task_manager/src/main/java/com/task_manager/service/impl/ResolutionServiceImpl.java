@@ -19,11 +19,14 @@ import java.util.List;
 
 @Service
 public class ResolutionServiceImpl implements ResolutionService {
-    @Autowired
-    private ResolutionRepository resolutionRepository;
+    private final ResolutionRepository resolutionRepository;
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+
+    public ResolutionServiceImpl(ResolutionRepository resolutionRepository, UserService userService) {
+        this.resolutionRepository = resolutionRepository;
+        this.userService = userService;
+    }
 
     //    Добавление комментария к задаче
     @Transactional
@@ -67,12 +70,8 @@ public class ResolutionServiceImpl implements ResolutionService {
     //помечает статус решение как "Failed" или "Approved"
     @Transactional
     public void updateResolutionStatus(Task task, StatusDto statusDto) {
-        Resolution resolution = resolutionRepository.findById(statusDto.getResolutionId())
+        Resolution resolution = resolutionRepository.findFirstByTaskOrderByIdDesc(task)
                         .orElseThrow(()->new ResourceNotFound("Решение не найдено, повторите запрос..."));
-
-        if (resolution.getTask() != task) {
-            throw new ResourceNotFound("Это решение не относиться к это задаче, повторите запрос...");
-        }
 
         if (resolution.getStatus() != ResolutionStatus.SUBMITTED) {
             throw new ResourceNotFound("Решение уже рассмотрено, повторите запрос...");

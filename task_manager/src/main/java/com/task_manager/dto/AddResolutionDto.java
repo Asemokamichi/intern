@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AddResolutionDto {
+    private Long taskId;
     private Long id;
     private Long authorID;
     private LocalDateTime creationDate;

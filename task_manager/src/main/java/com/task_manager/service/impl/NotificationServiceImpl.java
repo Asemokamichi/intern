@@ -15,11 +15,14 @@ import java.util.List;
 
 @Service
 public class NotificationServiceImpl implements NotificationService {
-    @Autowired
-    private NotificationRepository notificationRepository;
+    private final NotificationRepository notificationRepository;
+    private final UserService userService;
 
     @Autowired
-    private UserService userService;
+    public NotificationServiceImpl(NotificationRepository notificationRepository, UserService userService) {
+        this.notificationRepository = notificationRepository;
+        this.userService = userService;
+    }
 
     //получаем все уведомление
     @Override
@@ -60,23 +63,21 @@ public class NotificationServiceImpl implements NotificationService {
 
     // уведомление всех назначенных сотрудников о назначение новой задачи
     @Transactional
-    public void notifyAssignmentOfNewTask(List<Responsible> responsibles) {
-        notifyUser(responsibles, NotificationType.TASK_ASSIGNED);
+    public void notifyAssignmentOfNewTask(Task task) {
+        notifyUser(task, task.getResponsibles(), NotificationType.TASK_ASSIGNED);
     }
 
     // уведомление руководителя и всех остальных назначенных сотрудников о добавления комментария
     @Transactional
-    public void notifyNewCommentAdded(Resolution resolution) {
-        Task task = resolution.getTask();
-
+    public void notifyNewCommentAdded(Task task, Long authorId) {
         // уведомление руководителя
         notifyUser(task, NotificationType.TASK_COMMENT_ADDED);
 
         // уведомление всех остальных назначенных сотрудников
-        for (Responsible responsible : task.getResponsibles()) {
-            if (responsible.getUser() == resolution.getUser()) continue;
+        for (Long responsible : task.getResponsibles()) {
+            if (responsible.equals(authorId)) continue;
 
-            notifyUser(task, responsible.getUser(), NotificationType.TASK_COMMENT_ADDED);
+            notifyUser(task, new User(responsible), NotificationType.TASK_COMMENT_ADDED);
         }
     }
 
@@ -87,7 +88,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     // уведомляем всех о завершении задачи
     public void notifyTaskCompleted(Task task) {
-        notifyUser(task.getResponsibles(), NotificationType.TASK_COMPLETED);
+        notifyUser(task, task.getResponsibles(), NotificationType.TASK_COMPLETED);
     }
 
     // уведомляем руководителя о принятии задачи и о старте работы
@@ -97,7 +98,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     // уведомляем всех о продлении дедлайна
     public void notifyAllAboutDeadlineExtension(Task task) {
-        notifyUser(task.getResponsibles(), NotificationType.TASK_DEADLINE_EXTENDED);
+        notifyUser(task, task.getResponsibles(), NotificationType.TASK_DEADLINE_EXTENDED);
     }
 
     //уведомляем о получение решения задачи
@@ -107,18 +108,18 @@ public class NotificationServiceImpl implements NotificationService {
 
     // уведомляем о том, что решение по задаче принято
     public void notifyTaskResolutionApproved(Task task) {
-        notifyUser(task.getResponsibles(), NotificationType.TASK_APPROVED);
+        notifyUser(task, task.getResponsibles(), NotificationType.TASK_APPROVED);
         notifyTaskCompleted(task);
     }
 
     // уведомляем о том, что решение по задаче принято
     public void notifyTaskResolutionReturnedForRevision(Task task) {
-        notifyUser(task.getResponsibles(), NotificationType.TASK_RETURNED_FOR_REVISION);
+        notifyUser(task, task.getResponsibles(), NotificationType.TASK_RETURNED_FOR_REVISION);
     }
 
     // уведомляем об удалении задачи
     public void notifyTaskDeleted(Task task) {
-        notifyUser(task.getResponsibles(), NotificationType.TASK_DELETED);
+        notifyUser(task, task.getResponsibles(), NotificationType.TASK_DELETED);
     }
 
     // создает сущность Notification. После заполнение отправляет в бд
@@ -128,7 +129,7 @@ public class NotificationServiceImpl implements NotificationService {
         notification.setUser(user);
         notification.setTask(task);
         notification.setCreationDate(LocalDateTime.now());
-        notification.setMessage(notificationType.formatMessage(task.getId()));
+        notification.setMessage(notificationType.formatMessage(task.getId(), task.getTitle()));
 
         notificationRepository.save(notification);
     }
@@ -137,9 +138,9 @@ public class NotificationServiceImpl implements NotificationService {
         notifyUser(task, task.getUser(), notificationType);
     }
 
-    private void notifyUser(List<Responsible> responsibles, NotificationType notificationType) {
-        for (Responsible responsible : responsibles) {
-            notifyUser(responsible.getTask(), responsible.getUser(), notificationType);
+    private void notifyUser(Task task, Long[] responsibles, NotificationType notificationType) {
+        for (Long id : responsibles) {
+            notifyUser(task, new User(id), notificationType);
         }
     }
 }

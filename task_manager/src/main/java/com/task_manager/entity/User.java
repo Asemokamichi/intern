@@ -1,5 +1,6 @@
 package com.task_manager.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.task_manager.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -30,6 +31,7 @@ public class User {
     @Column(name = "last_name")
     private String lastName;
 
+    @JsonIgnore
     @Column(name = "password")
     private String password;
 
@@ -40,15 +42,19 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user")
     private List<Task> tasks;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user")
     private List<Resolution> resolutions;
 
-    @OneToMany(mappedBy = "user")
-    private List<Responsible> responsibles;
-
+    @JsonIgnore
     @OneToMany(mappedBy = "user")
     private List<Notification> notifications;
+
+    public User(Long id) {
+        this.id = id;
+    }
 }

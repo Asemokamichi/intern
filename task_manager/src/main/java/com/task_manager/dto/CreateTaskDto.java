@@ -17,7 +17,7 @@ public class CreateTaskDto {
     private LocalDateTime creationDate;
     private LocalDateTime targetDate;
     private Long authorID;
-    private List<Long> responsibles;
+    private Long[] responsibles;
     private String type;
     private Boolean isParallel;
     private String title;
@@ -31,7 +31,7 @@ public class CreateTaskDto {
         }
 
         return targetDate != null && authorID != null
-                && (responsibles != null || responsibles.isEmpty()) && isParallel != null && title != null && body != null;
+                && (responsibles != null || responsibles.length!=0) && isParallel != null && title != null && body != null;
     }
 
 

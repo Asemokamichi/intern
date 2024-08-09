@@ -1,9 +1,7 @@
 package com.task_manager.controller;
 
-import com.task_manager.dto.NotificationDto;
 import com.task_manager.entity.Notification;
 import com.task_manager.service.NotificationService;
-import com.task_manager.util.Convert;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -18,8 +16,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/notifications")
 public class NotificationController {
-    @Autowired
     private NotificationService notificationService;
+
+    public NotificationController(NotificationService notificationService) {
+        this.notificationService = notificationService;
+    }
 
     @Operation(summary = "Получить все уведомления",
             description = "Получает все уведомления для указанного пользователя.")
@@ -31,7 +32,7 @@ public class NotificationController {
     public ResponseEntity<?> getNotifications(@PathVariable Long userId) {
         List<Notification> notifications = notificationService.getNotifications(userId);
 
-        return ResponseEntity.ok(Convert.toDto(notifications, NotificationDto::new));
+        return ResponseEntity.ok(notifications);
     }
 
     @Operation(summary = "Пометить уведомление как прочитанное",

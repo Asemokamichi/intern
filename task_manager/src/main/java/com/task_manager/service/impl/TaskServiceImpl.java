@@ -1,22 +1,21 @@
 package com.task_manager.service.impl;
 
-import com.task_manager.dto.AddResolutionDto;
-import com.task_manager.dto.CreateTaskDto;
-import com.task_manager.dto.DateExtensionDto;
-import com.task_manager.dto.StatusDto;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.task_manager.dto.*;
+import com.task_manager.entity.Notification;
 import com.task_manager.entity.Resolution;
-import com.task_manager.entity.Responsible;
 import com.task_manager.entity.Task;
 import com.task_manager.entity.User;
 import com.task_manager.enums.NotificationType;
 import com.task_manager.enums.Status;
+import com.task_manager.enums.TaskNotificationTopic;
 import com.task_manager.enums.TypeTask;
 import com.task_manager.exceptions.AlreadyExists;
 import com.task_manager.exceptions.InvalidRequest;
 import com.task_manager.exceptions.ResourceNotFound;
+import com.task_manager.kafka.producer.NotificationProducer;
 import com.task_manager.repository.TaskRepository;
 import com.task_manager.service.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,20 +25,21 @@ import java.util.List;
 @Service
 public class TaskServiceImpl implements TaskService {
 
-    @Autowired
-    private TaskRepository taskRepository;
+    private final TaskRepository taskRepository;
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
-    @Autowired
-    private ResponsibleService responsibleService;
+    private final ResolutionService resolutionService;
+    private final NotificationProducer notificationProducer;
+    private final NotificationService notificationService;
 
-    @Autowired
-    private NotificationService notificationService;
-
-    @Autowired
-    private ResolutionService resolutionService;
+    public TaskServiceImpl(TaskRepository taskRepository, UserService userService, NotificationService notificationService, ResolutionService resolutionService, NotificationProducer notificationProducer) {
+        this.taskRepository = taskRepository;
+        this.userService = userService;
+        this.notificationService = notificationService;
+        this.resolutionService = resolutionService;
+        this.notificationProducer = notificationProducer;
+    }
 
     /*
      * Создание задачи
@@ -60,7 +60,7 @@ public class TaskServiceImpl implements TaskService {
 
         User user = userService.findById(createTaskDto.getAuthorID());
 
-        if (createTaskDto.getType().equals("ASSIGNMENT") && createTaskDto.getResponsibles().size() > 1) {
+        if (createTaskDto.getType().equals("ASSIGNMENT") && createTaskDto.getResponsibles().length > 1) {
             throw new InvalidRequest("Для задач типа ASSIGNMENT можно назначать только одного сотрудника. Измените тип задачи или разделите задачу для каждого сотрудника.");
         }
 
@@ -70,13 +70,13 @@ public class TaskServiceImpl implements TaskService {
 
         if (task.getTypeTask() == TypeTask.NOTIFICATION) {
             task.setFinishDate(LocalDateTime.now());
+            task.setStatus(Status.COMPLETED);
         }
 
         taskRepository.save(task);
 
-
-        responsibleService.assignUsersToTask(createTaskDto.getResponsibles(), task);
-
+        NotificationDto notificationDto = new NotificationDto(task);
+        notificationProducer.sendNotification(notificationDto, TaskNotificationTopic.TASK_ASSIGNED);
 
         return task;
     }
@@ -103,7 +103,8 @@ public class TaskServiceImpl implements TaskService {
 
         taskRepository.save(task);
 
-        notificationService.notifyAllAboutDeadlineExtension(task);
+        NotificationDto notificationDto = new NotificationDto(task);
+        notificationProducer.sendNotification(notificationDto, TaskNotificationTopic.TASK_DEADLINE_EXTENDED);
 
         return task;
     }
@@ -115,7 +116,10 @@ public class TaskServiceImpl implements TaskService {
 
         taskRepository.delete(task);
 
-        if (task.getFinishDate() != null) notificationService.notifyTaskDeleted(task);
+        if (task.getFinishDate() != null) {
+            NotificationDto notificationDto = new NotificationDto(task);
+            notificationProducer.sendNotification(notificationDto, TaskNotificationTopic.TASK_DELETED);
+        }
     }
 
     // Завершение задачи
@@ -139,7 +143,8 @@ public class TaskServiceImpl implements TaskService {
 
         taskRepository.save(task);
 
-        notificationService.notifyTaskCompleted(task);
+        NotificationDto notificationDto = new NotificationDto(task);
+        notificationProducer.sendNotification(notificationDto, TaskNotificationTopic.TASK_COMPLETED);
     }
 
     // 1. получение задачи
@@ -149,7 +154,7 @@ public class TaskServiceImpl implements TaskService {
     public void startTaskExecution(Long id, Long userId) {
         Task task = getTask(id);
 
-        checkResponsibility(task.getResponsibles(), userId);
+//        checkResponsibility(task.getResponsibles(), userId);
 
         if (task.getStatus() != Status.CREATED) {
             throw new AlreadyExists("Задача уже находится в процессе выполнения или завершена. Повторный старт задачи невозможен.");
@@ -159,7 +164,8 @@ public class TaskServiceImpl implements TaskService {
 
         taskRepository.save(task);
 
-        notificationService.notifyManagerAboutTaskAcceptance(task);
+        NotificationDto notificationDto = new NotificationDto(task);
+        notificationProducer.sendNotification(notificationDto, TaskNotificationTopic.TASK_ACCEPTED_STARTED);
     }
 
     // 1. отправляем решение на проверку
@@ -172,7 +178,8 @@ public class TaskServiceImpl implements TaskService {
 
         resolutionService.addResolution(task, addResolutionDto);
 
-        notificationService.notifyResolutionReceived(task);
+        NotificationDto notificationDto = new NotificationDto(task);
+        notificationProducer.sendNotification(notificationDto, TaskNotificationTopic.TASK_RESOLUTION_RECEIVED);
     }
 
 
@@ -183,6 +190,7 @@ public class TaskServiceImpl implements TaskService {
         }
 
         resolutionService.updateResolutionStatus(task, statusDto);
+        NotificationDto notificationDto = new NotificationDto(task);
 
         switch (statusDto.getStatus()) {
             case "APPROVED" -> {
@@ -191,10 +199,11 @@ public class TaskServiceImpl implements TaskService {
 
                 taskRepository.save(task);
 
-                notificationService.notifyTaskResolutionApproved(task);
+                notificationProducer.sendNotification(notificationDto, TaskNotificationTopic.TASK_RESOLUTION_APPROVED);
             }
             case "FAILED" -> {
-                notificationService.notifyTaskResolutionReturnedForRevision(task);
+
+                notificationProducer.sendNotification(notificationDto, TaskNotificationTopic.TASK_RESOLUTION_REVISION);
             }
         }
     }
@@ -211,7 +220,7 @@ public class TaskServiceImpl implements TaskService {
     public List<Task> getActiveTasksByAssignee(Long id) {
         User user = userService.findById(id);
 
-        return taskRepository.findByFinishDateIsNullAndResponsiblesUser(user);
+        return taskRepository.findByUserAndFinishDateIsNull(user);
     }
 
     //    Добавление коммента к задаче
@@ -226,18 +235,13 @@ public class TaskServiceImpl implements TaskService {
         if (task.getFinishDate() != null)
             throw new AlreadyExists("Невозможно добавить комментарий к закрытой задаче...");
 
-        Resolution resolution = resolutionService.addComment(task, commentDto);
+        resolutionService.addComment(task, commentDto);
 
-        notificationService.notifyNewCommentAdded(resolution);
+        NotificationDto notificationDto = new NotificationDto(task, commentDto.getAuthorID());
+        notificationProducer.sendNotification(notificationDto, TaskNotificationTopic.TASK_COMMENT_ADDED);
 
-        if (!task.getIsParallel() || resolutionService.getComments(task).size() == task.getResponsibles().size()) {
-            if (resolutionService.getComments(task).size() == task.getResponsibles().size()) {
-                notificationService.notifySupervisorTaskClosed(task, NotificationType.ALL_EMPLOYEES_COMMENTED);
-
-            } else {
-                notificationService.notifySupervisorTaskClosed(task, NotificationType.PARTIAL_EMPLOYEES_COMMENTED);
-
-            }
+        if (!task.getIsParallel() || resolutionService.getComments(task).size() == task.getResponsibles().length) {
+            notificationProducer.sendNotification(notificationDto, TaskNotificationTopic.TASK_COMMENT_CLOSED);
 
             completedTask(task);
         }
@@ -251,13 +255,12 @@ public class TaskServiceImpl implements TaskService {
         return resolutionService.getComments(task);
     }
 
-    private void checkResponsibility(List<Responsible> responsibles, Long id) {
-        for(Responsible responsible: responsibles){
-            if (responsible.getUser().getId() == id) return;
+
+    private void checkResponsibility(Long[] responsibles, Long id) {
+        for (Long item : responsibles) {
+            if (item == id) return;
         }
 
-        throw new AlreadyExists("Вы не назначены к задаче, вы не можете отвечать...");
+        throw new ResourceNotFound("");
     }
-
-
 }
