@@ -12,6 +12,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
@@ -36,8 +38,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Transactional
-    public User findByUsername(String username){
+    public User findByUsername(String username) {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new AlreadyExists(""));
+    }
+
+    @Transactional
+    public boolean findExistingUserIds(Long[] responsibles) {
+        List<Long> userIds = userRepository.findExistingUserIds(responsibles);
+        return userIds.size() == responsibles.length;
     }
 }

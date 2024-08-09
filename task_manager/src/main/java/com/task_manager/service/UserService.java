@@ -11,4 +11,6 @@ public interface UserService {
      User findById(Long id) ;
 
      User findByUsername(String username);
+
+     public boolean findExistingUserIds(Long[] responsibles);
 }
