@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @RestController
 @RequestMapping("/notifications")
@@ -61,6 +63,39 @@ public class NotificationController {
     @GetMapping("/{userId}/readAll")
     public ResponseEntity<?> markAllNotificationsAsRead(@PathVariable Long userId) {
         notificationService.markAllNotificationsAsRead(userId);
+
+        return ResponseEntity.ok().build();
+    }
+
+
+    /**
+     * Очищает прочитанные уведомления.
+     * <p>
+     * Данный функционал намеренно реализован без использования очередей,
+     * так как текущая нагрузка на систему позволяет выполнять эти операции
+     * асинхронно с помощью потока, не перегружая основной поток исполнения.
+     * <p>
+     * Метод использует {@link ExecutorService} для запуска задачи очистки
+     * уведомлений в отдельном потоке.
+     */
+    @Operation(summary = "Очищает прочитанные уведомления.",
+            description = "Очищает прочитанные уведомления.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Все уведомления успешно помечены как прочитанные."),
+            @ApiResponse(responseCode = "404",
+                    description = "Пользователь не найден.")
+    })
+    @GetMapping("/clear")
+    public ResponseEntity<?> clearNotification() {
+        ExecutorService executorService = Executors.newFixedThreadPool(1);
+        Runnable runnable = () -> {
+            notificationService.clearReadNotifications();
+        };
+
+        executorService.submit(runnable);
+
+        executorService.shutdown();
 
         return ResponseEntity.ok().build();
     }

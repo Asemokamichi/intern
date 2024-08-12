@@ -264,6 +264,6 @@ public class TaskServiceImpl implements TaskService {
             if (item == id) return;
         }
 
-        throw new ResourceNotFound("");
+        throw new ResourceNotFound("Вы не назначены к задаче, какие-либо действия над этой задачей невозможны...");
     }
 }

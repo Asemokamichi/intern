@@ -18,7 +18,8 @@ public class NotificationServiceImpl implements NotificationService {
     private final NotificationRepository notificationRepository;
     private final UserService userService;
 
-    @Autowired
+    private final int day = 30;
+
     public NotificationServiceImpl(NotificationRepository notificationRepository, UserService userService) {
         this.notificationRepository = notificationRepository;
         this.userService = userService;
@@ -120,6 +121,13 @@ public class NotificationServiceImpl implements NotificationService {
     // уведомляем об удалении задачи
     public void notifyTaskDeleted(Task task) {
         notifyUser(task, task.getResponsibles(), NotificationType.TASK_DELETED);
+    }
+
+    @Transactional
+    public void clearReadNotifications() {
+        System.out.printf("[%s]: deletion started...\n", LocalDateTime.now());
+        notificationRepository.deleteAllByViewedIsTrueOrCreationDateBefore(LocalDateTime.now().minusDays(day));
+        System.out.printf("[%s]: deletion completed...\n", LocalDateTime.now());
     }
 
     // создает сущность Notification. После заполнение отправляет в бд

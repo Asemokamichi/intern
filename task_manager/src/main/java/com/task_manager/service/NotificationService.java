@@ -51,4 +51,6 @@ public interface NotificationService {
 
     // уведомляем об удалении задачи
     void notifyTaskDeleted(Task task);
+
+    void clearReadNotifications();
 }

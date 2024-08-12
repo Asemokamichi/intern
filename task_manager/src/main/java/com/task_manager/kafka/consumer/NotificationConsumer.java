@@ -59,7 +59,7 @@ public class NotificationConsumer {
         }
         Task task = taskService.getTask(notificationDto.getTaskId());
 
-        notificationService.notifyAllAboutDeadlineExtension(task);
+        notificationService.notifyTaskDeleted(task);
     }
 
     @KafkaListener(topics = "task.completed", groupId = "my-group")
