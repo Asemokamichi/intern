@@ -1,0 +1,147 @@
+package com.user_manager.service.impl;
+
+import com.user_manager.dto.UserCreationRequest;
+import com.user_manager.dto.UserInfoDto;
+import com.user_manager.exception.NotFoundException;
+import com.user_manager.model.Department;
+import com.user_manager.model.Role;
+import com.user_manager.model.User;
+import com.user_manager.repository.UserRepository;
+import com.user_manager.service.DepartmentService;
+import com.user_manager.service.UserService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
+
+import static com.user_manager.utility.TimeFormatter.formatter;
+import static com.user_manager.utility.TimeFormatter.now;
+
+@Service
+@RequiredArgsConstructor
+public class UserServiceImpl implements UserService {
+
+    private final UserRepository userRepository;
+    private final DepartmentService departmentService;
+
+
+    @Override
+    public User createUser(UserCreationRequest request) throws NotFoundException {
+        Department department = departmentService.getDepartmentById(request.getDepartmentId());
+
+        User user = User.builder()
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
+                .contacts(request.getContacts())
+                .position(request.getPosition())
+                .role(request.getRole())
+                .department(department)
+                .creationDate(now.format(formatter))
+                .modificationDate(now.format(formatter))
+                .isActive(true)
+                .build();
+
+        userRepository.save(user);
+        return user;
+    }
+
+    @Override
+    public User editUserInfo(Long id, UserInfoDto request) throws NotFoundException {
+        User user = getUserById(id);
+        String firstName = user.getFirstName();
+        String lastName = user.getLastName();
+        Map<String, String> contacts = user.getContacts();
+
+        if(request.getFirstName() != null){
+            firstName = request.getFirstName();
+        }
+        if(request.getLastName() != null){
+            lastName = request.getLastName();
+        }
+        if(request.getContacts() != null){
+            contacts = request.getContacts();
+        }
+
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        user.setContacts(contacts);
+        user.setModificationDate(now.format(formatter));
+        userRepository.save(user);
+
+        return user;
+    }
+
+    @Override
+    public String updateUserPosition(Long id, String position) throws NotFoundException {
+        User user = getUserById(id);
+        user.setPosition(position);
+        userRepository.save(user);
+        return "User position is updated";
+
+    }
+
+    @Override
+    public String updateUserRole(Long id, Role role) throws NotFoundException {
+        User user = getUserById(id);
+        user.setRole(role);
+        userRepository.save(user);
+        return "User role is updated";
+    }
+
+    @Override
+    public String updateUserDepartment(Long id, Long departmentId) throws NotFoundException {
+        User user = getUserById(id);
+        Department department = departmentService.getDepartmentById(departmentId);
+        user.setDepartment(department);
+        userRepository.save(user);
+        return "User department is updated";
+    }
+
+    @Override
+    public String activateUser(Long id) throws NotFoundException {
+        User user = getUserById(id);
+        user.setIsActive(true);
+        user.setModificationDate(now.format(formatter));
+        userRepository.save(user);
+        return "User is activated";
+    }
+
+    @Override
+    public String deactivateUser(Long id) throws NotFoundException {
+        User user = getUserById(id);
+        user.setIsActive(false);
+        user.setModificationDate(now.format(formatter));
+        userRepository.save(user);
+        return "User is deactivated";
+    }
+
+    @Override
+    public String delete(Long id) throws NotFoundException {
+        User user = getUserById(id);
+        userRepository.delete(user);
+        return "User is deleted";
+    }
+
+    @Override
+    public User getInfo(Long id) {
+        return null;
+    }
+
+    @Override
+    public List<User> getInfo() {
+        return List.of();
+    }
+
+    @Override
+    public Boolean existsById(Long id) {
+        return userRepository.existsById(id);
+    }
+
+
+    @Override
+    public User getUserById(Long id) throws NotFoundException {
+        return userRepository.findById(id).orElseThrow(() -> new NotFoundException("User with " + id + " does not exist"));
+
+    }
+}
