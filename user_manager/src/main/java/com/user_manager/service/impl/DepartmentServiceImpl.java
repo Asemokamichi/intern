@@ -1,16 +1,14 @@
 package com.user_manager.service.impl;
 
 import com.user_manager.dto.DepartmentRequest;
+import com.user_manager.dto.SingleDepartmentDto;
 import com.user_manager.exception.NotFoundException;
 import com.user_manager.model.Department;
 import com.user_manager.repository.DepartmentRepository;
 import com.user_manager.service.DepartmentService;
-import com.user_manager.service.UserService;
 import com.user_manager.service.UserValidationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 import static com.user_manager.utility.TimeFormatter.formatter;
 import static com.user_manager.utility.TimeFormatter.now;
@@ -30,9 +28,12 @@ public class DepartmentServiceImpl implements DepartmentService {
     public Department createDepartment(DepartmentRequest request) throws NotFoundException {
         Long headId = request.getHeadId();
         Long parentDepartmentId = request.getParentDepartmentId();
+        Department parentDepartment = null;
 
         if (parentDepartmentId != null) {
             exists(parentDepartmentId);
+            parentDepartment = getDepartmentById(parentDepartmentId);
+
         }
         if (headId != null) {
             userValidationService.exists(headId);
@@ -41,7 +42,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         Department department = Department.builder()
                 .title(request.getTitle())
                 .headId(headId)
-                .parentDepartmentId(parentDepartmentId)
+                .parentDepartment(parentDepartment)
                 .creationDate(now.format(formatter))
                 .modificationDate(now.format(formatter))
                 .build();
@@ -55,7 +56,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         Department department = getDepartmentById(id);
 
         Long headId = department.getHeadId();
-        Long parentDepartmentId = department.getParentDepartmentId();
+        Department parentDepartment = department.getParentDepartment();
         String title = department.getTitle();
 
         if (request.getHeadId() != null) {
@@ -65,8 +66,9 @@ public class DepartmentServiceImpl implements DepartmentService {
         }
 
         if (request.getParentDepartmentId() != null) {
-            if(exists(request.getParentDepartmentId())){
-                parentDepartmentId = request.getParentDepartmentId();
+            Long getParentDepartmentId = request.getParentDepartmentId();
+            if(exists(getParentDepartmentId)){
+                parentDepartment = getDepartmentById(getParentDepartmentId);
             }
         }
 
@@ -76,7 +78,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 
         department.setTitle(title);
         department.setHeadId(headId);
-        department.setParentDepartmentId(parentDepartmentId);
+        department.setParentDepartment(parentDepartment);
         department.setModificationDate(now.format(formatter));
 
         departmentRepository.save(department);
@@ -96,7 +98,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Override
     public String deleteParentDepartment(Long id) throws NotFoundException{
         Department department = getDepartmentById(id);
-        department.setParentDepartmentId(null);
+        department.setParentDepartment(null);
         department.setModificationDate(now.format(formatter));
         departmentRepository.save(department);
         return "Parent Department id is deleted";
@@ -111,13 +113,29 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
-    public List<Department> getDepartments(Long id) {
-        return List.of();
+    public SingleDepartmentDto getDepartment(Long id) throws NotFoundException {
+        Department department = getDepartmentById(id);
+        return SingleDepartmentDto.fromEntity(department);
     }
 
     @Override
-    public List<Department> getDepartments() {
-        return List.of();
+    public String buildDepartmentTree(Long departmentId) throws NotFoundException {
+        Department root = getDepartmentById(departmentId);
+        if (root == null) {
+            return "Department with " + departmentId + " does not exist";
+        }
+        StringBuilder result = new StringBuilder();
+        printTree(root, "", result);
+        return result.toString();
+    }
+
+    private void printTree(Department department, String indent, StringBuilder result) {
+        result.append(indent).append("Title: ").append(department.getTitle()).append("\n")
+                .append(indent).append("Head ID: ").append(department.getHeadId()).append("\n")
+                .append(indent).append("Creation Date: ").append(department.getCreationDate()).append("\n");
+        for (Department child : department.getChildDepartments()) {
+            printTree(child, indent + "    ", result);
+        }
     }
 
     public Boolean exists(Long id) throws NotFoundException {
@@ -126,5 +144,6 @@ public class DepartmentServiceImpl implements DepartmentService {
         }
         return true;
     }
+
 
 }

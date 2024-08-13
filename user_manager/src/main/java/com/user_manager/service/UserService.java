@@ -17,8 +17,8 @@ public interface UserService {
     String activateUser(Long id) throws NotFoundException;
     String deactivateUser(Long id) throws NotFoundException;
     String delete(Long id) throws NotFoundException;
-    User getInfo(Long id);
-    List<User> getInfo();
+    User getInfo(Long id) throws NotFoundException;
+    List<User> getAllUserOfDepartment(Long departmentId);
     Boolean existsById(Long id);
     User getUserById(Long id) throws NotFoundException;
 

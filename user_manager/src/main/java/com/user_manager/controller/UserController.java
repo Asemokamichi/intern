@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/user-manager")
 @RequiredArgsConstructor
@@ -27,17 +29,17 @@ public class UserController {
     }
 
     @PutMapping("/update-position")
-    ResponseEntity<String> updateUserPosition(@RequestParam Long id, @RequestParam String position) throws NotFoundException{
+    public ResponseEntity<String> updateUserPosition(@RequestParam Long id, @RequestParam String position) throws NotFoundException{
         return ResponseEntity.ok(userService.updateUserPosition(id, position));
 
     }
     @PutMapping("/update-role")
-    ResponseEntity<String> updateUserRole(@RequestParam Long id, @RequestParam Role role) throws NotFoundException{
+    public ResponseEntity<String> updateUserRole(@RequestParam Long id, @RequestParam Role role) throws NotFoundException{
         return ResponseEntity.ok(userService.updateUserRole(id, role));
     }
 
     @PutMapping("/update-department")
-    ResponseEntity<String> updateUserDepartment(@RequestParam Long id, @RequestParam Long departmentId) throws NotFoundException{
+    public ResponseEntity<String> updateUserDepartment(@RequestParam Long id, @RequestParam Long departmentId) throws NotFoundException{
         return ResponseEntity.ok(userService.updateUserDepartment(id, departmentId));
     }
 
@@ -54,6 +56,16 @@ public class UserController {
     @DeleteMapping("/delete-user")
     public ResponseEntity<String> delete(@RequestParam Long id) throws NotFoundException{
         return ResponseEntity.ok(userService.delete(id));
+    }
+
+    @GetMapping("/user")
+    public ResponseEntity<User> getInfo(@RequestParam Long id) throws NotFoundException{
+        return ResponseEntity.ok(userService.getInfo(id));
+    }
+
+    @GetMapping("all-users-of-department")
+    public ResponseEntity<List<User>> getAllUserOfDepartment(@RequestParam Long departmentId){
+        return ResponseEntity.ok(userService.getAllUserOfDepartment(departmentId));
     }
 
 }

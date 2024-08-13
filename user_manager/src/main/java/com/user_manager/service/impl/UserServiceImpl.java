@@ -124,14 +124,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getInfo(Long id) {
-        return null;
+    public User getInfo(Long id) throws NotFoundException {
+        return getUserById(id);
     }
 
     @Override
-    public List<User> getInfo() {
-        return List.of();
+    public List<User> getAllUserOfDepartment(Long departmentId) {
+        return userRepository.findByDepartmentId(departmentId);
     }
+
 
     @Override
     public Boolean existsById(Long id) {

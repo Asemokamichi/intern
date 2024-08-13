@@ -1,10 +1,9 @@
 package com.user_manager.service;
 
 import com.user_manager.dto.DepartmentRequest;
+import com.user_manager.dto.SingleDepartmentDto;
 import com.user_manager.exception.NotFoundException;
 import com.user_manager.model.Department;
-
-import java.util.List;
 
 public interface DepartmentService {
     Department getDepartmentById(Long id) throws NotFoundException;
@@ -13,8 +12,8 @@ public interface DepartmentService {
     String deleteDepartmentHead(Long id) throws NotFoundException;
     String deleteParentDepartment(Long id) throws NotFoundException;
     String delete(Long id) throws NotFoundException;
-    List<Department> getDepartments(Long id);
-    List<Department> getDepartments();
+    SingleDepartmentDto getDepartment(Long id) throws NotFoundException;
     Boolean exists(Long id) throws NotFoundException;
+    String buildDepartmentTree(Long departmentId) throws NotFoundException;
 
 }

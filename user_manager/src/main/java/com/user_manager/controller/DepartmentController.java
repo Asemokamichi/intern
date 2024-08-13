@@ -1,6 +1,7 @@
 package com.user_manager.controller;
 
 import com.user_manager.dto.DepartmentRequest;
+import com.user_manager.dto.SingleDepartmentDto;
 import com.user_manager.exception.NotFoundException;
 import com.user_manager.model.Department;
 import com.user_manager.service.DepartmentService;
@@ -39,5 +40,14 @@ public class DepartmentController {
         return ResponseEntity.ok(departmentService.delete(id));
     }
 
+    @GetMapping("/department")
+    public ResponseEntity<SingleDepartmentDto> getDepartment(@RequestParam Long id) throws NotFoundException{
+            return ResponseEntity.ok(departmentService.getDepartment(id));
+    }
+
+    @GetMapping("/departments")
+    public String getDepartmentTree(@RequestParam Long id) throws NotFoundException {
+        return departmentService.buildDepartmentTree(id);
+    }
 
 }
