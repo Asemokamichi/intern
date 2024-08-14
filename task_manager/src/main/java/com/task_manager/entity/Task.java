@@ -60,11 +60,6 @@ public class Task {
     @OneToMany(mappedBy = "task")
     private List<Resolution> resolutions;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "task")
-    private List<Notification> notifications;
-
-
     @ManyToOne
     @JoinColumn(name = "author_id")
     private User user;

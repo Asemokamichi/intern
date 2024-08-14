@@ -1,12 +1,9 @@
 package com.task_manager.service.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.task_manager.dto.*;
-import com.task_manager.entity.Notification;
 import com.task_manager.entity.Resolution;
 import com.task_manager.entity.Task;
 import com.task_manager.entity.User;
-import com.task_manager.enums.NotificationType;
 import com.task_manager.enums.Status;
 import com.task_manager.enums.TaskNotificationTopic;
 import com.task_manager.enums.TypeTask;
@@ -31,12 +28,11 @@ public class TaskServiceImpl implements TaskService {
 
     private final ResolutionService resolutionService;
     private final NotificationProducer notificationProducer;
-    private final NotificationService notificationService;
 
-    public TaskServiceImpl(TaskRepository taskRepository, UserService userService, NotificationService notificationService, ResolutionService resolutionService, NotificationProducer notificationProducer) {
+    public TaskServiceImpl(TaskRepository taskRepository, UserService userService,
+                           ResolutionService resolutionService, NotificationProducer notificationProducer) {
         this.taskRepository = taskRepository;
         this.userService = userService;
-        this.notificationService = notificationService;
         this.resolutionService = resolutionService;
         this.notificationProducer = notificationProducer;
     }
@@ -59,7 +55,7 @@ public class TaskServiceImpl implements TaskService {
         }
 
         User user = userService.findById(createTaskDto.getAuthorID());
-        if (!userService.findExistingUserIds(createTaskDto.getResponsibles())){
+        if (!userService.findExistingUserIds(createTaskDto.getResponsibles())) {
             throw new InvalidRequest("Некоторые из указанных сотрудников не найдены. Пожалуйста, проверьте и повторите запрос.");
         }
 
@@ -244,8 +240,11 @@ public class TaskServiceImpl implements TaskService {
         notificationProducer.sendNotification(notificationDto, TaskNotificationTopic.TASK_COMMENT_ADDED);
 
         if (!task.getIsParallel() || resolutionService.getComments(task).size() == task.getResponsibles().length) {
-            notificationProducer.sendNotification(notificationDto, TaskNotificationTopic.TASK_COMMENT_CLOSED);
-
+            if (!task.getIsParallel()) {
+                notificationProducer.sendNotification(notificationDto, TaskNotificationTopic.TASK_COMMENT_CLOSED_NONPARALLEL);
+            }else {
+                notificationProducer.sendNotification(notificationDto, TaskNotificationTopic.TASK_COMMENT_CLOSED_PARALLEL);
+            }
             completedTask(task);
         }
     }

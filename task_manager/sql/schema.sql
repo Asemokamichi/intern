@@ -1,7 +1,5 @@
 drop table if exists resolutions;
 
-drop table if exists notifications;
-
 drop table if exists tasks;
 
 drop table if exists users;
@@ -41,16 +39,6 @@ create table resolutions
     author_id     int8 references users (id) on delete cascade,
     task_id       int8 references tasks (id) on delete cascade,
     status        varchar
-);
-
-create table notifications
-(
-    id            serial8 primary key,
-    creation_date timestamp default now() not null,
-    task_id       int8 references tasks (id) on delete cascade,
-    user_id       int8 references users (id) on delete cascade,
-    message       text                    not null,
-    is_viewed     bool      default false
 );
 
 

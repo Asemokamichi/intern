@@ -50,10 +50,6 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Resolution> resolutions;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "user")
-    private List<Notification> notifications;
-
     public User(Long id) {
         this.id = id;
     }
