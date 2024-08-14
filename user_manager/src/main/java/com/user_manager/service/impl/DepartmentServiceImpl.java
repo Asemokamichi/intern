@@ -2,7 +2,9 @@ package com.user_manager.service.impl;
 
 import com.user_manager.dto.DepartmentRequest;
 import com.user_manager.dto.SingleDepartmentDto;
+import com.user_manager.enums.NotificationTopic;
 import com.user_manager.exception.NotFoundException;
+import com.user_manager.kafka.producer.NotificationProducer;
 import com.user_manager.model.Department;
 import com.user_manager.repository.DepartmentRepository;
 import com.user_manager.service.DepartmentService;
@@ -18,6 +20,7 @@ import static com.user_manager.utility.TimeFormatter.now;
 public class DepartmentServiceImpl implements DepartmentService {
     private final DepartmentRepository departmentRepository;
     private final UserValidationService userValidationService;
+    private final NotificationProducer notificationProducer;
 
     @Override
     public Department getDepartmentById(Long id) throws NotFoundException {
@@ -47,6 +50,9 @@ public class DepartmentServiceImpl implements DepartmentService {
                 .modificationDate(now.format(formatter))
                 .build();
         departmentRepository.save(department);
+
+        //notification about department creation
+        notificationProducer.sendNotification(department.getId(), NotificationTopic.DEPARTMENT_CREATED);
 
         return department;
     }
@@ -82,6 +88,10 @@ public class DepartmentServiceImpl implements DepartmentService {
         department.setModificationDate(now.format(formatter));
 
         departmentRepository.save(department);
+
+        //notification about department update
+        notificationProducer.sendNotification(id, NotificationTopic.DEPARTMENT_UPDATE);
+
         return department;
     }
 
@@ -92,6 +102,9 @@ public class DepartmentServiceImpl implements DepartmentService {
         department.setHeadId(null);
         department.setModificationDate(now.format(formatter));
         departmentRepository.save(department);
+
+        //notification about department head delete
+        notificationProducer.sendNotification(id, NotificationTopic.DEPARTMENT_HEAD_DELETE);
         return "Head id is deleted";
     }
 
@@ -101,6 +114,9 @@ public class DepartmentServiceImpl implements DepartmentService {
         department.setParentDepartment(null);
         department.setModificationDate(now.format(formatter));
         departmentRepository.save(department);
+
+        //notification about department parent delete
+        notificationProducer.sendNotification(id, NotificationTopic.DEPARTMENT_PARENT_DELETE);
         return "Parent Department id is deleted";
     }
 
@@ -109,6 +125,8 @@ public class DepartmentServiceImpl implements DepartmentService {
     public String delete(Long id) throws NotFoundException {
         Department department = getDepartmentById(id);
         departmentRepository.delete(department);
+        //notification about department  delete
+        notificationProducer.sendNotification(id, NotificationTopic.DEPARTMENT_DELETE);
         return "Department is deleted";
     }
 

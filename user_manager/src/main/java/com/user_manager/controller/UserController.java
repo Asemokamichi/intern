@@ -3,7 +3,7 @@ package com.user_manager.controller;
 import com.user_manager.dto.UserCreationRequest;
 import com.user_manager.dto.UserInfoDto;
 import com.user_manager.exception.NotFoundException;
-import com.user_manager.model.Role;
+import com.user_manager.enums.Role;
 import com.user_manager.model.User;
 import com.user_manager.service.UserService;
 import lombok.RequiredArgsConstructor;

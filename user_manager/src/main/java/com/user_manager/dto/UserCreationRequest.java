@@ -1,9 +1,6 @@
 package com.user_manager.dto;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.user_manager.model.Department;
-import com.user_manager.model.Role;
-import jakarta.persistence.*;
+import com.user_manager.enums.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

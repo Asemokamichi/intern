@@ -1,14 +1,13 @@
 package com.user_manager.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.user_manager.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.io.IOException;
-import java.sql.Date;
 import java.util.Map;
 
 @Entity
