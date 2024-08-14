@@ -24,7 +24,6 @@ public class Department {
     private Long headId;
     private String creationDate;
     private String modificationDate;
-//    private Long parentDepartmentId;
 
     @ManyToOne
     @JoinColumn(name = "parent_department_id")
@@ -38,10 +37,6 @@ public class Department {
     @JsonIgnore
     @OneToMany(mappedBy = "parentDepartment", cascade = CascadeType.ALL)
     private List<Department> childDepartments = new ArrayList<>();
-
-    public void addChildDepartment(Department child) {
-        this.childDepartments.add(child);
-    }
 
 
 }

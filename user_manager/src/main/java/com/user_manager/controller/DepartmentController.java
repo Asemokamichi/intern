@@ -1,6 +1,7 @@
 package com.user_manager.controller;
 
 import com.user_manager.dto.DepartmentRequest;
+import com.user_manager.dto.DepartmentTreeDto;
 import com.user_manager.dto.SingleDepartmentDto;
 import com.user_manager.exception.NotFoundException;
 import com.user_manager.model.Department;
@@ -16,12 +17,12 @@ public class DepartmentController {
     private final DepartmentService departmentService;
 
         @PostMapping("/department")
-    public ResponseEntity<Department> createDepartment(@RequestBody DepartmentRequest request) throws NotFoundException {
+    public ResponseEntity<SingleDepartmentDto> createDepartment(@RequestBody DepartmentRequest request) throws NotFoundException {
         return ResponseEntity.ok(departmentService.createDepartment(request));
     }
 
     @PutMapping("/department")
-    public ResponseEntity<Department> updateDepartment(@RequestParam Long id, @RequestBody DepartmentRequest request) throws NotFoundException {
+    public ResponseEntity<SingleDepartmentDto> updateDepartment(@RequestParam Long id, @RequestBody DepartmentRequest request) throws NotFoundException {
         return ResponseEntity.ok(departmentService.updateDepartment(id, request));
     }
 
@@ -46,8 +47,8 @@ public class DepartmentController {
     }
 
     @GetMapping("/departments")
-    public String getDepartmentTree(@RequestParam Long id) throws NotFoundException {
-        return departmentService.buildDepartmentTree(id);
+    public ResponseEntity<DepartmentTreeDto> getDepartmentTree(@RequestParam Long id) throws NotFoundException {
+        return ResponseEntity.ok(departmentService.buildDepartmentTree(id));
     }
 
 }

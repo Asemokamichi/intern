@@ -1,10 +1,12 @@
 package com.user_manager.service.impl;
 
 import com.user_manager.dto.DepartmentRequest;
+import com.user_manager.dto.DepartmentTreeDto;
 import com.user_manager.dto.SingleDepartmentDto;
 import com.user_manager.enums.NotificationTopic;
 import com.user_manager.exception.NotFoundException;
 import com.user_manager.kafka.producer.NotificationProducer;
+import com.user_manager.mapper.DepartmentMapper;
 import com.user_manager.model.Department;
 import com.user_manager.repository.DepartmentRepository;
 import com.user_manager.service.DepartmentService;
@@ -28,7 +30,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
-    public Department createDepartment(DepartmentRequest request) throws NotFoundException {
+    public SingleDepartmentDto createDepartment(DepartmentRequest request) throws NotFoundException {
         Long headId = request.getHeadId();
         Long parentDepartmentId = request.getParentDepartmentId();
         Department parentDepartment = null;
@@ -54,11 +56,12 @@ public class DepartmentServiceImpl implements DepartmentService {
         //notification about department creation
         notificationProducer.sendNotification(department.getId(), NotificationTopic.DEPARTMENT_CREATED);
 
-        return department;
+
+        return  DepartmentMapper.entityToSingleDepartmentDto((department));
     }
 
     @Override
-    public Department updateDepartment(Long id, DepartmentRequest request) throws NotFoundException {
+    public SingleDepartmentDto updateDepartment(Long id, DepartmentRequest request) throws NotFoundException {
         Department department = getDepartmentById(id);
 
         Long headId = department.getHeadId();
@@ -92,7 +95,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         //notification about department update
         notificationProducer.sendNotification(id, NotificationTopic.DEPARTMENT_UPDATE);
 
-        return department;
+        return  DepartmentMapper.entityToSingleDepartmentDto((department));
     }
 
     @Override
@@ -132,28 +135,14 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public SingleDepartmentDto getDepartment(Long id) throws NotFoundException {
-        Department department = getDepartmentById(id);
-        return SingleDepartmentDto.fromEntity(department);
+        return DepartmentMapper.entityToSingleDepartmentDto(getDepartmentById(id));
     }
 
     @Override
-    public String buildDepartmentTree(Long departmentId) throws NotFoundException {
+    public DepartmentTreeDto buildDepartmentTree(Long departmentId) throws NotFoundException {
         Department root = getDepartmentById(departmentId);
-        if (root == null) {
-            return "Department with " + departmentId + " does not exist";
-        }
-        StringBuilder result = new StringBuilder();
-        printTree(root, "", result);
-        return result.toString();
-    }
 
-    private void printTree(Department department, String indent, StringBuilder result) {
-        result.append(indent).append("Title: ").append(department.getTitle()).append("\n")
-                .append(indent).append("Head ID: ").append(department.getHeadId()).append("\n")
-                .append(indent).append("Creation Date: ").append(department.getCreationDate()).append("\n");
-        for (Department child : department.getChildDepartments()) {
-            printTree(child, indent + "    ", result);
-        }
+        return DepartmentMapper.entityToDepartmentTreeDto(root);
     }
 
     public Boolean exists(Long id) throws NotFoundException {

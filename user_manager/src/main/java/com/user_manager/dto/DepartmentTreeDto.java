@@ -5,16 +5,18 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class SingleDepartmentDto {
+public class DepartmentTreeDto {
     private Long id;
     private String title;
     private Long headId;
-    private Long parentDepartmentId;
     private String creationDate;
     private String modificationDate;
+    private List<DepartmentTreeDto> childDepartments;
 
 }

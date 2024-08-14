@@ -168,7 +168,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> getAllUserOfDepartment(Long departmentId) {
+    public List<User> getAllUserOfDepartment(Long departmentId) throws NotFoundException {
+        departmentService.exists(departmentId);
         return userRepository.findByDepartmentId(departmentId);
     }
 

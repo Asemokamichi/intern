@@ -64,7 +64,7 @@ public class UserController {
     }
 
     @GetMapping("all-users-of-department")
-    public ResponseEntity<List<User>> getAllUserOfDepartment(@RequestParam Long departmentId){
+    public ResponseEntity<List<User>> getAllUserOfDepartment(@RequestParam Long departmentId) throws NotFoundException {
         return ResponseEntity.ok(userService.getAllUserOfDepartment(departmentId));
     }
 
