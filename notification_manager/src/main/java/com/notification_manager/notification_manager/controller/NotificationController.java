@@ -2,11 +2,12 @@ package com.notification_manager.notification_manager.controller;
 
 import com.notification_manager.notification_manager.entity.Notification;
 import com.notification_manager.notification_manager.service.NotificationService;
-import com.notification_manager.notification_manager.service.impl.NotificationServiceImpl;
+import com.notification_manager.notification_manager.service.TaskNotificationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,13 +17,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 @RestController
+@AllArgsConstructor
 @RequestMapping("/notifications")
 public class NotificationController {
     private final NotificationService notificationService;
-
-    public NotificationController(NotificationService notificationService) {
-        this.notificationService = notificationService;
-    }
 
     @Operation(summary = "Получить все уведомления",
             description = "Получает все уведомления для указанного пользователя.")

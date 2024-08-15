@@ -4,20 +4,21 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.notification_manager.notification_manager.dto.NotificationDto;
 import com.notification_manager.notification_manager.enums.NotificationType;
-import com.notification_manager.notification_manager.service.NotificationService;
-import com.notification_manager.notification_manager.service.impl.NotificationServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.notification_manager.notification_manager.service.TaskNotificationService;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.scheduling.config.Task;
 import org.springframework.stereotype.Service;
 
 @Service
 public class NotificationConsumer {
-    @Autowired
-    private NotificationServiceImpl notificationService;
-    @Autowired
-    private ObjectMapper objectMapper;
 
+    private final TaskNotificationService notificationService;
+
+    private final ObjectMapper objectMapper;
+
+    public NotificationConsumer(TaskNotificationService notificationService, ObjectMapper objectMapper) {
+        this.notificationService = notificationService;
+        this.objectMapper = objectMapper;
+    }
 
     @KafkaListener(topics = "task.assigned", groupId = "my-group")
     public void taskAssignedConsumer(String message) {
