@@ -13,19 +13,19 @@ import java.util.Optional;
 
 @Repository
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
-    List<Notification> findByUserIdAndViewedFalse(Long userId);
+    List<Notification> findByRecipientIdAndViewedFalse(Long userId);
 
-    Optional<Notification> findByUserIdAndIdAndViewedFalse(Long userId, Long id);
+    Optional<Notification> findByRecipientIdAndIdAndViewedFalse(Long userId, Long id);
 
     @Modifying
     void deleteAllByViewedIsTrueOrCreationDateBefore(LocalDateTime date);
 
     @Modifying
-    @Query("UPDATE Notification n SET n.viewed = true WHERE n.userId = :userId AND n.viewed = false")
+    @Query("UPDATE Notification n SET n.viewed = true WHERE n.recipientId = :userId AND n.viewed = false")
     void updateByUserId(@Param("userId") Long userId);
 
     @Modifying
-    @Query("UPDATE Notification n SET n.viewed = true WHERE n.userId = :userId AND n.id = :noteId")
+    @Query("UPDATE Notification n SET n.viewed = true WHERE n.recipientId = :userId AND n.id = :noteId")
     void updateByIdAndUserId(@Param("userId") Long userId, @Param("noteId") Long noteId);
 
 }

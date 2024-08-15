@@ -5,9 +5,11 @@ import com.notification_manager.entity.Notification;
 import com.notification_manager.enums.UserNotificationType;
 import com.notification_manager.repository.NotificationRepository;
 import com.notification_manager.service.UserNotificationService;
+import org.springframework.stereotype.Service;
+
 import java.time.LocalDateTime;
 
-
+@Service
 public class UserNotificationServiceImpl implements UserNotificationService {
     private final NotificationRepository notificationRepository;
 
