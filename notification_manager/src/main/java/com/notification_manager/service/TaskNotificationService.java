@@ -1,39 +1,39 @@
 package com.notification_manager.service;
 
-import com.notification_manager.dto.NotificationDto;
-import com.notification_manager.enums.NotificationType;
+import com.notification_manager.dto.TaskNotificationDto;
+import com.notification_manager.enums.TaskNotificationType;
 import org.springframework.stereotype.Service;
 
 @Service
 public interface TaskNotificationService {
 
     // уведомление всех назначенных сотрудников о назначение новой задачи
-    void notifyAssignmentOfNewTask(NotificationDto notificationDto);
+    void notifyAssignmentOfNewTask(TaskNotificationDto taskNotificationDto);
 
     // уведомление руководителя и всех остальных назначенных сотрудников о добавления комментария
-    void notifyNewCommentAdded(NotificationDto notificationDto);
+    void notifyNewCommentAdded(TaskNotificationDto taskNotificationDto);
 
     // уведомляем руководителя о том, что задача прокомментирована всеми назначенными сотрудниками
-    void notifySupervisorTaskClosed(NotificationDto notificationDto, NotificationType notificationType);
+    void notifySupervisorTaskClosed(TaskNotificationDto taskNotificationDto, TaskNotificationType taskNotificationType);
 
     // уведомляем всех о завершении задачи
-    void notifyTaskCompleted(NotificationDto notificationDto);
+    void notifyTaskCompleted(TaskNotificationDto taskNotificationDto);
 
     // уведомляем руководителя о принятии задачи и о старте работы
-    void notifyManagerAboutTaskAcceptance(NotificationDto notificationDto);
+    void notifyManagerAboutTaskAcceptance(TaskNotificationDto taskNotificationDto);
 
     // уведомляем всех о продлении дедлайна
-    void notifyAllAboutDeadlineExtension(NotificationDto notificationDto);
+    void notifyAllAboutDeadlineExtension(TaskNotificationDto taskNotificationDto);
 
     //уведомляем о получение решения задачи
-    void notifyResolutionReceived(NotificationDto notificationDto);
+    void notifyResolutionReceived(TaskNotificationDto taskNotificationDto);
 
     // уведомляем о том, что решение по задаче принято
-    void notifyTaskResolutionApproved(NotificationDto notificationDto);
+    void notifyTaskResolutionApproved(TaskNotificationDto taskNotificationDto);
 
     // уведомляем о том, что решение по задаче принято
-    void notifyTaskResolutionReturnedForRevision(NotificationDto notificationDto);
+    void notifyTaskResolutionReturnedForRevision(TaskNotificationDto taskNotificationDto);
 
     // уведомляем об удалении задачи
-    void notifyTaskDeleted(NotificationDto notificationDto);
+    void notifyTaskDeleted(TaskNotificationDto taskNotificationDto);
 }

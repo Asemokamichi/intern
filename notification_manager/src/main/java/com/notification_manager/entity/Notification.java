@@ -30,8 +30,11 @@ public class Notification {
     @Column(name = "object_id")
     private Long objectId;
 
+    @Column(name = "type")
+    private String type;
+
     @Column(name = "user_id")
-    private Long userId;
+    private Long recipientId;
 
 
 

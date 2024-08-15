@@ -22,8 +22,7 @@ public interface UserService {
     List<User> getAllUserOfDepartment(Long departmentId) throws NotFoundException;
     Boolean existsById(Long id);
     User getUserById(Long id) throws NotFoundException;
-    List<Long> getAllUserIds();
-    List<Long> findAllUserIdsOfDepartment(Department department);
+
 
 
 

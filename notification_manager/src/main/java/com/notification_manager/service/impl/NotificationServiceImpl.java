@@ -46,4 +46,5 @@ public class NotificationServiceImpl implements NotificationService {
         notificationRepository.deleteAllByViewedIsTrueOrCreationDateBefore(LocalDateTime.now().minusDays(day));
         System.out.printf("[%s]: deletion completed...\n", LocalDateTime.now());
     }
+
 }

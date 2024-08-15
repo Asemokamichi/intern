@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class KafkaConfig {
+public class ProducerConfig {
 
     @Bean
     public NewTopic userCreatedTopic() {
