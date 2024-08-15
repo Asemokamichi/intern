@@ -1,6 +1,6 @@
-package com.notification_manager.notification_manager.repository;
+package com.notification_manager.repository;
 
-import com.notification_manager.notification_manager.entity.Notification;
+import com.notification_manager.entity.Notification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

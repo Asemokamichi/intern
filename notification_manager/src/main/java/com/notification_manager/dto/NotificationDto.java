@@ -1,4 +1,4 @@
-package com.notification_manager.notification_manager.dto;
+package com.notification_manager.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,8 +1,8 @@
-package com.notification_manager.notification_manager.service.impl;
+package com.notification_manager.service.impl;
 
-import com.notification_manager.notification_manager.entity.Notification;
-import com.notification_manager.notification_manager.repository.NotificationRepository;
-import com.notification_manager.notification_manager.service.NotificationService;
+import com.notification_manager.entity.Notification;
+import com.notification_manager.repository.NotificationRepository;
+import com.notification_manager.service.NotificationService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

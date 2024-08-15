@@ -1,4 +1,4 @@
-package com.notification_manager.notification_manager.enums;
+package com.notification_manager.enums;
 
 public enum NotificationType {
     TASK_ASSIGNED("Задача №%d '%s' назначена"),

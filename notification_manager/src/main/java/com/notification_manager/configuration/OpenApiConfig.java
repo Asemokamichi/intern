@@ -1,4 +1,4 @@
-package com.notification_manager.notification_manager.configuration;
+package com.notification_manager.configuration;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
@@ -14,6 +14,6 @@ public class OpenApiConfig {
                 .info(new Info()
                         .title("Task Manager API")
                         .version("1.0")
-                        .description("API documentation for Task Manager application"));
+                        .description("API documentation for Notification Manager application"));
     }
 }

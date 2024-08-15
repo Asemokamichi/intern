@@ -1,4 +1,4 @@
-package com.notification_manager.notification_manager.enums;
+package com.notification_manager.enums;
 
 public enum TaskNotificationTopic {
     TASK_ASSIGNED("task.assigned"),

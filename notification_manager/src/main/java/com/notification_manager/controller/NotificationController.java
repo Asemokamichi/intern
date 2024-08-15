@@ -1,8 +1,7 @@
-package com.notification_manager.notification_manager.controller;
+package com.notification_manager.controller;
 
-import com.notification_manager.notification_manager.entity.Notification;
-import com.notification_manager.notification_manager.service.NotificationService;
-import com.notification_manager.notification_manager.service.TaskNotificationService;
+import com.notification_manager.entity.Notification;
+import com.notification_manager.service.NotificationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

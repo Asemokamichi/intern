@@ -1,10 +1,10 @@
-package com.notification_manager.notification_manager.kafka.consumer;
+package com.notification_manager.kafka.consumer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.notification_manager.notification_manager.dto.NotificationDto;
-import com.notification_manager.notification_manager.enums.NotificationType;
-import com.notification_manager.notification_manager.service.TaskNotificationService;
+import com.notification_manager.dto.NotificationDto;
+import com.notification_manager.enums.NotificationType;
+import com.notification_manager.service.TaskNotificationService;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 

@@ -1,4 +1,4 @@
-package com.notification_manager.notification_manager;
+package com.notification_manager;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

@@ -1,6 +1,6 @@
-package com.notification_manager.notification_manager.service;
+package com.notification_manager.service;
 
-import com.notification_manager.notification_manager.entity.Notification;
+import com.notification_manager.entity.Notification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

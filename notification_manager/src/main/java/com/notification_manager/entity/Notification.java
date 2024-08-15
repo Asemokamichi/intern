@@ -1,4 +1,4 @@
-package com.notification_manager.notification_manager.entity;
+package com.notification_manager.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

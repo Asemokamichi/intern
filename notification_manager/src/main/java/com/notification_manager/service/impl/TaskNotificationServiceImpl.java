@@ -1,16 +1,15 @@
-package com.notification_manager.notification_manager.service.impl;
+package com.notification_manager.service.impl;
 
 
-import com.notification_manager.notification_manager.dto.NotificationDto;
-import com.notification_manager.notification_manager.enums.NotificationType;
-import com.notification_manager.notification_manager.repository.NotificationRepository;
-import com.notification_manager.notification_manager.service.TaskNotificationService;
-import com.notification_manager.notification_manager.entity.Notification;
+import com.notification_manager.entity.Notification;
+import com.notification_manager.dto.NotificationDto;
+import com.notification_manager.enums.NotificationType;
+import com.notification_manager.repository.NotificationRepository;
+import com.notification_manager.service.TaskNotificationService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 public class TaskNotificationServiceImpl implements TaskNotificationService {

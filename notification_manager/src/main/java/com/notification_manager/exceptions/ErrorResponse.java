@@ -1,4 +1,4 @@
-package com.notification_manager.notification_manager.exceptions;
+package com.notification_manager.exceptions;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

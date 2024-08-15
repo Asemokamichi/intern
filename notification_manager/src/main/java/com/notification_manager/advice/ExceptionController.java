@@ -1,4 +1,4 @@
-package com.notification_manager.notification_manager.advice;
+package com.notification_manager.advice;
 
 import com.task_manager.exceptions.AlreadyExists;
 import com.task_manager.exceptions.ErrorResponse;
