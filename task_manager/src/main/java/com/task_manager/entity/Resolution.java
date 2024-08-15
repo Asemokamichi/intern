@@ -28,9 +28,8 @@ public class Resolution {
     @Column(name = "text")
     private String text;
 
-    @ManyToOne
-    @JoinColumn(name = "author_id")
-    private User user;
+    @Column(name = "author_id")
+    private Long authorId;
 
     @ManyToOne
     @JoinColumn(name = "task_id")
@@ -42,6 +41,7 @@ public class Resolution {
 
     public Resolution(AddResolutionDto commentDto) {
         creationDate = commentDto.getCreationDate();
+        authorId = commentDto.getAuthorID();
         text = commentDto.getText();
     }
 }

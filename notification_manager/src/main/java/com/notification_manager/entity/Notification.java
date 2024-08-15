@@ -27,8 +27,8 @@ public class Notification {
     @Column(name = "is_viewed")
     private boolean viewed;
 
-    @Column(name = "task_id")
-    private Long taskId;
+    @Column(name = "object_id")
+    private Long objectId;
 
     @Column(name = "user_id")
     private Long userId;

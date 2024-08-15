@@ -35,6 +35,9 @@ public class Task {
     @Column(name = "finish_date")
     private LocalDateTime finishDate;
 
+    @Column(name = "author_id")
+    private Long authorId;
+
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private Status status;
@@ -52,7 +55,7 @@ public class Task {
     @Column(name = "body")
     private String body;
 
-    @Column(name = "responsibles", columnDefinition = "TEXT", length = Integer.MAX_VALUE)
+    @Column(name = "responsibles", length = Integer.MAX_VALUE)
     @Convert(converter = LongArrayConverter.class)
     private Long[] responsibles;
 
@@ -60,19 +63,17 @@ public class Task {
     @OneToMany(mappedBy = "task")
     private List<Resolution> resolutions;
 
-    @ManyToOne
-    @JoinColumn(name = "author_id")
-    private User user;
-
     public Task(CreateTaskDto taskDto) {
         if (taskDto.getCreationDate() != null) creationDate = taskDto.getCreationDate();
         else creationDate = LocalDateTime.now();
+        authorId = taskDto.getAuthorID();
         targetDate = taskDto.getTargetDate();
         typeTask = TypeTask.valueOf(taskDto.getType());
         isParallel = taskDto.getIsParallel();
         responsibles = taskDto.getResponsibles();
         title = taskDto.getTitle();
         body = taskDto.getBody();
+        status = Status.CREATED;
     }
 
     public Task(Long id) {

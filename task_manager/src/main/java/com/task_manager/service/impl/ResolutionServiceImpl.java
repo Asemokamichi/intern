@@ -4,14 +4,11 @@ import com.task_manager.dto.AddResolutionDto;
 import com.task_manager.dto.StatusDto;
 import com.task_manager.entity.Resolution;
 import com.task_manager.entity.Task;
-import com.task_manager.entity.User;
 import com.task_manager.enums.ResolutionStatus;
 import com.task_manager.exceptions.AlreadyExists;
 import com.task_manager.exceptions.ResourceNotFound;
 import com.task_manager.repository.ResolutionRepository;
 import com.task_manager.service.ResolutionService;
-import com.task_manager.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,24 +18,18 @@ import java.util.List;
 public class ResolutionServiceImpl implements ResolutionService {
     private final ResolutionRepository resolutionRepository;
 
-    private final UserService userService;
-
-    public ResolutionServiceImpl(ResolutionRepository resolutionRepository, UserService userService) {
+    public ResolutionServiceImpl(ResolutionRepository resolutionRepository) {
         this.resolutionRepository = resolutionRepository;
-        this.userService = userService;
     }
 
     //    Добавление комментария к задаче
     @Transactional
     public Resolution addComment(Task task, AddResolutionDto commentDto) {
-        User user = userService.findById(commentDto.getAuthorID());
-        if (resolutionRepository.existsByUserAndTask(user, task))
+        if (resolutionRepository.existsByAuthorIdAndTask(commentDto.getAuthorID(), task))
             throw new AlreadyExists("Вы уже оставляли комметарий, в повторном комментировании нет необходимости");
 
         Resolution resolution = new Resolution(commentDto);
-
         resolution.setTask(task);
-        resolution.setUser(user);
 
         return resolutionRepository.save(resolution);
     }
@@ -46,16 +37,13 @@ public class ResolutionServiceImpl implements ResolutionService {
     //    Добавление решения к задаче
     @Transactional
     public Resolution addResolution(Task task, AddResolutionDto resolutionDto) {
-        User user = userService.findById(resolutionDto.getAuthorID());
-
-        if (resolutionRepository.existsByUserAndTaskWithStatusSubmittedOrApproved(user, task)) {
+        if (resolutionRepository.existsByUserAndTaskWithStatusSubmittedOrApproved(resolutionDto.getAuthorID(), task)) {
             throw new AlreadyExists("Ваше решение уже принято или находится на проверке. Повторная отправка не требуется.");
         }
 
         Resolution resolution = new Resolution(resolutionDto);
 
         resolution.setTask(task);
-        resolution.setUser(user);
         resolution.setStatus(ResolutionStatus.SUBMITTED);
 
         return resolutionRepository.save(resolution);

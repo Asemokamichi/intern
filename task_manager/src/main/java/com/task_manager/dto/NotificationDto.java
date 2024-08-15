@@ -12,14 +12,20 @@ import lombok.Setter;
 @AllArgsConstructor
 public class NotificationDto {
     private Long taskId;
-    private Long dontSendUserId;
+    private Long authorId;
+    private String title;
+    private Long[] recipientIds;
+    private Long dontRecipientId;
 
     public NotificationDto(Task task) {
-        this.taskId = task.getId();
+        taskId = task.getId();
+        authorId = task.getAuthorId();
+        title = task.getTitle();
+        recipientIds = task.getResponsibles();
     }
     public NotificationDto(Task task, Long id) {
-        this.taskId = task.getId();
-        dontSendUserId = id;
+        this(task);
+        dontRecipientId = id;
     }
 
 

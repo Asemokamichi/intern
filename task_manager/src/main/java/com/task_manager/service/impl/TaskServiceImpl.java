@@ -3,7 +3,6 @@ package com.task_manager.service.impl;
 import com.task_manager.dto.*;
 import com.task_manager.entity.Resolution;
 import com.task_manager.entity.Task;
-import com.task_manager.entity.User;
 import com.task_manager.enums.Status;
 import com.task_manager.enums.TaskNotificationTopic;
 import com.task_manager.enums.TypeTask;
@@ -23,16 +22,11 @@ import java.util.List;
 public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository taskRepository;
-
-    private final UserService userService;
-
     private final ResolutionService resolutionService;
     private final NotificationProducer notificationProducer;
 
-    public TaskServiceImpl(TaskRepository taskRepository, UserService userService,
-                           ResolutionService resolutionService, NotificationProducer notificationProducer) {
+    public TaskServiceImpl(TaskRepository taskRepository, ResolutionService resolutionService, NotificationProducer notificationProducer) {
         this.taskRepository = taskRepository;
-        this.userService = userService;
         this.resolutionService = resolutionService;
         this.notificationProducer = notificationProducer;
     }
@@ -54,7 +48,6 @@ public class TaskServiceImpl implements TaskService {
             throw new InvalidRequest("Предоставленные данные неполные, повторите операцию.");
         }
 
-        User user = userService.findById(createTaskDto.getAuthorID());
         if (!userService.findExistingUserIds(createTaskDto.getResponsibles())) {
             throw new InvalidRequest("Некоторые из указанных сотрудников не найдены. Пожалуйста, проверьте и повторите запрос.");
         }
@@ -64,8 +57,6 @@ public class TaskServiceImpl implements TaskService {
         }
 
         Task task = new Task(createTaskDto);
-        task.setUser(user);
-        task.setStatus(Status.CREATED);
 
         if (task.getTypeTask() == TypeTask.NOTIFICATION) {
             task.setFinishDate(LocalDateTime.now());
@@ -153,7 +144,7 @@ public class TaskServiceImpl implements TaskService {
     public void startTaskExecution(Long id, Long userId) {
         Task task = getTask(id);
 
-//        checkResponsibility(task.getResponsibles(), userId);
+        checkResponsibility(task.getResponsibles(), userId);
 
         if (task.getStatus() != Status.CREATED) {
             throw new AlreadyExists("Задача уже находится в процессе выполнения или завершена. Повторный старт задачи невозможен.");
@@ -209,17 +200,13 @@ public class TaskServiceImpl implements TaskService {
 
     @Transactional
     public List<Task> getActiveTasksByAuthor(Long id) {
-        User user = userService.findById(id);
-
-        return taskRepository.findByUserAndFinishDateIsNull(user);
+        return taskRepository.findByAuthorIdAndFinishDateIsNull(id);
     }
 
     //    Получение списка активных задач, созданных пользователем
     @Transactional
     public List<Task> getActiveTasksByAssignee(Long id) {
-        User user = userService.findById(id);
-
-        return taskRepository.findByUserAndFinishDateIsNull(user);
+        return taskRepository.findByAuthorIdAndFinishDateIsNull(id);
     }
 
     //    Добавление коммента к задаче
