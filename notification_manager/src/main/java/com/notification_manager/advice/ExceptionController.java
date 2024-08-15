@@ -1,9 +1,10 @@
 package com.notification_manager.advice;
 
-import com.task_manager.exceptions.AlreadyExists;
-import com.task_manager.exceptions.ErrorResponse;
-import com.task_manager.exceptions.InvalidRequest;
-import com.task_manager.exceptions.ResourceNotFound;
+
+import com.notification_manager.exceptions.AlreadyExists;
+import com.notification_manager.exceptions.ErrorResponse;
+import com.notification_manager.exceptions.InvalidRequest;
+import com.notification_manager.exceptions.ResourceNotFound;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
