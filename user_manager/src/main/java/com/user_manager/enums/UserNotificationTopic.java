@@ -1,6 +1,6 @@
 package com.user_manager.enums;
 
-public enum NotificationTopic {
+public enum UserNotificationTopic {
     USER_ROLE_UPDATE("user.role.update"),
     USER_POSITION_UPDATE("user.position.update"),
     USER_CREATED("user.created"),
@@ -18,7 +18,7 @@ public enum NotificationTopic {
 
     private final String topicName;
 
-    NotificationTopic(String topicName) {
+    UserNotificationTopic(String topicName) {
         this.topicName = topicName;
     }
 

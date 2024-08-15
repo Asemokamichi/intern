@@ -2,15 +2,16 @@ package com.user_manager.service.impl;
 
 import com.user_manager.dto.DepartmentRequest;
 import com.user_manager.dto.DepartmentTreeDto;
+import com.user_manager.dto.NotificationDto;
 import com.user_manager.dto.SingleDepartmentDto;
-import com.user_manager.enums.NotificationTopic;
+import com.user_manager.enums.UserNotificationTopic;
 import com.user_manager.exception.NotFoundException;
 import com.user_manager.kafka.producer.NotificationProducer;
 import com.user_manager.mapper.DepartmentMapper;
 import com.user_manager.model.Department;
 import com.user_manager.repository.DepartmentRepository;
 import com.user_manager.service.DepartmentService;
-import com.user_manager.service.UserValidationService;
+import com.user_manager.service.UserUtilService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +22,7 @@ import static com.user_manager.utility.TimeFormatter.now;
 @RequiredArgsConstructor
 public class DepartmentServiceImpl implements DepartmentService {
     private final DepartmentRepository departmentRepository;
-    private final UserValidationService userValidationService;
+    private final UserUtilService userUtilService;
     private final NotificationProducer notificationProducer;
 
     @Override
@@ -41,7 +42,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 
         }
         if (headId != null) {
-            userValidationService.exists(headId);
+            userUtilService.exists(headId);
         }
 
         Department department = Department.builder()
@@ -54,7 +55,10 @@ public class DepartmentServiceImpl implements DepartmentService {
         departmentRepository.save(department);
 
         //notification about department creation
-        notificationProducer.sendNotification(department.getId(), NotificationTopic.DEPARTMENT_CREATED);
+
+
+        NotificationDto notificationDto = new NotificationDto(department, userUtilService.getAllUserIds());
+        notificationProducer.sendNotification(notificationDto, UserNotificationTopic.DEPARTMENT_CREATED);
 
 
         return  DepartmentMapper.entityToSingleDepartmentDto((department));
@@ -69,7 +73,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         String title = department.getTitle();
 
         if (request.getHeadId() != null) {
-            if(userValidationService.exists(request.getHeadId())){
+            if(userUtilService.exists(request.getHeadId())){
                headId = request.getHeadId();
             }
         }
@@ -93,7 +97,8 @@ public class DepartmentServiceImpl implements DepartmentService {
         departmentRepository.save(department);
 
         //notification about department update
-        notificationProducer.sendNotification(id, NotificationTopic.DEPARTMENT_UPDATE);
+        NotificationDto notificationDto = new NotificationDto(department, userUtilService.getAllUserIds());
+        notificationProducer.sendNotification(notificationDto, UserNotificationTopic.DEPARTMENT_UPDATE);
 
         return  DepartmentMapper.entityToSingleDepartmentDto((department));
     }
@@ -107,7 +112,8 @@ public class DepartmentServiceImpl implements DepartmentService {
         departmentRepository.save(department);
 
         //notification about department head delete
-        notificationProducer.sendNotification(id, NotificationTopic.DEPARTMENT_HEAD_DELETE);
+        NotificationDto notificationDto = new NotificationDto(department, userUtilService.getAllUserIds());
+        notificationProducer.sendNotification(notificationDto, UserNotificationTopic.DEPARTMENT_HEAD_DELETE);
         return "Head id is deleted";
     }
 
@@ -119,7 +125,8 @@ public class DepartmentServiceImpl implements DepartmentService {
         departmentRepository.save(department);
 
         //notification about department parent delete
-        notificationProducer.sendNotification(id, NotificationTopic.DEPARTMENT_PARENT_DELETE);
+        NotificationDto notificationDto = new NotificationDto(department, userUtilService.getAllUserIds());
+        notificationProducer.sendNotification(notificationDto, UserNotificationTopic.DEPARTMENT_PARENT_DELETE);
         return "Parent Department id is deleted";
     }
 
@@ -129,7 +136,8 @@ public class DepartmentServiceImpl implements DepartmentService {
         Department department = getDepartmentById(id);
         departmentRepository.delete(department);
         //notification about department  delete
-        notificationProducer.sendNotification(id, NotificationTopic.DEPARTMENT_DELETE);
+        NotificationDto notificationDto = new NotificationDto(department, userUtilService.getAllUserIds());
+        notificationProducer.sendNotification(notificationDto, UserNotificationTopic.DEPARTMENT_DELETE);
         return "Department is deleted";
     }
 

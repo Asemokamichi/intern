@@ -2,7 +2,8 @@ package com.user_manager.kafka.producer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.user_manager.enums.NotificationTopic;
+import com.user_manager.dto.NotificationDto;
+import com.user_manager.enums.UserNotificationTopic;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
@@ -16,12 +17,11 @@ public class NotificationProducer {
         this.objectMapper = objectMapper;
     }
 
-    public void sendNotification(Long id, NotificationTopic topic) {
-        try {
-            String idString =objectMapper.writeValueAsString(id);
-            kafkaTemplate.send(topic.getTopicName(), idString);
-
-        }catch (JsonProcessingException e){
+    public void sendNotification(NotificationDto notificationDto, UserNotificationTopic topic) {
+        try{
+            String json = objectMapper.writeValueAsString(notificationDto);
+            kafkaTemplate.send(topic.getTopicName(), json);
+        }catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
     }

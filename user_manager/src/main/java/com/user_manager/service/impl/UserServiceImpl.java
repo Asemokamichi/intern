@@ -1,8 +1,9 @@
 package com.user_manager.service.impl;
 
+import com.user_manager.dto.NotificationDto;
 import com.user_manager.dto.UserCreationRequest;
 import com.user_manager.dto.UserInfoDto;
-import com.user_manager.enums.NotificationTopic;
+import com.user_manager.enums.UserNotificationTopic;
 import com.user_manager.exception.NotFoundException;
 import com.user_manager.kafka.producer.NotificationProducer;
 import com.user_manager.model.Department;
@@ -28,8 +29,6 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final DepartmentService departmentService;
     private final NotificationProducer notificationProducer;
-    private final UserNotificationDeletionService userNotificationDeletionService;
-
 
     @Override
     public User createUser(UserCreationRequest request) throws NotFoundException {
@@ -50,8 +49,8 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
 
         //notification about new user
-        Long id = user.getId();
-        notificationProducer.sendNotification(id, NotificationTopic.USER_CREATED);
+        NotificationDto notificationDto = new NotificationDto(user, userRepository.findAllUserIds());
+        notificationProducer.sendNotification(notificationDto, UserNotificationTopic.USER_CREATED);
 
         return user;
     }
@@ -80,7 +79,8 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
 
         //notification about user info update
-        notificationProducer.sendNotification(id, NotificationTopic.USER_INFO_EDITED);
+        NotificationDto notificationDto = new NotificationDto(user, userRepository.findAllUserIds());
+        notificationProducer.sendNotification(notificationDto, UserNotificationTopic.USER_INFO_EDITED);
 
         return user;
     }
@@ -92,7 +92,8 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
 
         //notification about user position update
-        notificationProducer.sendNotification(id, NotificationTopic.USER_POSITION_UPDATE);
+        NotificationDto notificationDto = new NotificationDto(user, userRepository.findAllUserIds());
+        notificationProducer.sendNotification(notificationDto, UserNotificationTopic.USER_POSITION_UPDATE);
 
         return "User position is updated";
     }
@@ -104,7 +105,8 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
 
         //notification about user role update
-        notificationProducer.sendNotification(id, NotificationTopic.USER_ROLE_UPDATE);
+        NotificationDto notificationDto = new NotificationDto(user, userRepository.findAllUserIds());
+        notificationProducer.sendNotification(notificationDto, UserNotificationTopic.USER_ROLE_UPDATE);
 
         return "User role is updated";
     }
@@ -117,8 +119,10 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
 
         //notification about user department update
-        notificationProducer.sendNotification(id, NotificationTopic.USER_DEPARTMENT_UPDATE);
-        notificationProducer.sendNotification(id, NotificationTopic.USER_ADDED_TO_DEPARTMENT);
+        NotificationDto notificationDtoForAllUser = new NotificationDto(user, userRepository.findAllUserIds());
+        NotificationDto notificationDtoForDepartmentUser = new NotificationDto(user, userRepository.findAllUserIdsOfDepartment(department));
+        notificationProducer.sendNotification(notificationDtoForAllUser, UserNotificationTopic.USER_DEPARTMENT_UPDATE);
+        notificationProducer.sendNotification(notificationDtoForDepartmentUser, UserNotificationTopic.USER_ADDED_TO_DEPARTMENT);
 
         return "User department is updated";
     }
@@ -131,7 +135,8 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
 
         //notification about user activation
-        notificationProducer.sendNotification(id, NotificationTopic.USER_ACTIVATED);
+        NotificationDto notificationDto = new NotificationDto(user, userRepository.findAllUserIds());
+        notificationProducer.sendNotification(notificationDto, UserNotificationTopic.USER_ACTIVATED);
 
         return "User is activated";
     }
@@ -144,7 +149,8 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
 
         //notification about user deactivation
-        notificationProducer.sendNotification(id, NotificationTopic.USER_DEACTIVATED);
+        NotificationDto notificationDto = new NotificationDto(user, userRepository.findAllUserIds());
+        notificationProducer.sendNotification(notificationDto, UserNotificationTopic.USER_DEACTIVATED);
 
         return "User is deactivated";
     }
@@ -153,12 +159,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public String delete(Long id) throws NotFoundException {
         User user = getUserById(id);
-        //delete notification
-        userNotificationDeletionService.deleteUserNotifications(user);
         userRepository.delete(user);
 
         //notification about user deletion
-        notificationProducer.sendNotification(id, NotificationTopic.USER_DELETED);
+        List<Long>  userIds = userRepository.findAllUserIds();
+        userIds.remove(id);
+
+        NotificationDto notificationDto = new NotificationDto(user,userIds);
+        notificationProducer.sendNotification(notificationDto, UserNotificationTopic.USER_DELETED);
         return "User is deleted";
     }
 
@@ -184,15 +192,5 @@ public class UserServiceImpl implements UserService {
     public User getUserById(Long id) throws NotFoundException {
         return userRepository.findById(id).orElseThrow(() -> new NotFoundException("User with " + id + " does not exist"));
 
-    }
-
-    @Override
-    public List<Long> getAllUserIds() {
-        return userRepository.findAllUserIds();
-    }
-
-    @Override
-    public List<Long> findAllUserIdsOfDepartment(Department department) {
-        return userRepository.findAllUserIdsOfDepartment(department);
     }
 }
