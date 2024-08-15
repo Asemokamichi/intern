@@ -85,7 +85,7 @@ public class TaskNotificationServiceImpl implements TaskNotificationService {
     private void notifyUser(NotificationDto notificationDto, Long userId, NotificationType notificationType) {
         Notification notification = Notification.builder()
                 .userId(userId)
-                .taskId(notificationDto.getTaskId())
+                .objectId(notificationDto.getTaskId())
                 .creationDate(LocalDateTime.now())
                 .message(notificationType.formatMessage(notificationDto.getTaskId(),
                         notificationDto.getTitle()))
