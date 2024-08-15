@@ -48,9 +48,9 @@ public class TaskServiceImpl implements TaskService {
             throw new InvalidRequest("Предоставленные данные неполные, повторите операцию.");
         }
 
-        if (!userService.findExistingUserIds(createTaskDto.getResponsibles())) {
-            throw new InvalidRequest("Некоторые из указанных сотрудников не найдены. Пожалуйста, проверьте и повторите запрос.");
-        }
+//        if (!userService.findExistingUserIds(createTaskDto.getResponsibles())) {
+//            throw new InvalidRequest("Некоторые из указанных сотрудников не найдены. Пожалуйста, проверьте и повторите запрос.");
+//        }
 
         if (createTaskDto.getType().equals("ASSIGNMENT") && createTaskDto.getResponsibles().length > 1) {
             throw new InvalidRequest("Для задач типа ASSIGNMENT можно назначать только одного сотрудника. Измените тип задачи или разделите задачу для каждого сотрудника.");
