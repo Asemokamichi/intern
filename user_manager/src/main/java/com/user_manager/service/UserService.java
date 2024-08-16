@@ -11,9 +11,9 @@ import java.util.List;
 
 public interface UserService {
     User createUser(UserCreationRequest request) throws NotFoundException;
-    User editUserInfo(Long id, UserInfoDto request) throws NotFoundException;
+    User editUserInfo(UserInfoDto request) throws NotFoundException;
     String updateUserPosition(Long id, String position) throws NotFoundException;
-    String updateUserRole(Long id, Role role) throws NotFoundException;
+    String updateUserRole(Long id, String role) throws NotFoundException;
     String updateUserDepartment(Long id, Long departmentId) throws NotFoundException;
     String activateUser(Long id) throws NotFoundException;
     String deactivateUser(Long id) throws NotFoundException;

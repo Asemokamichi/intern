@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DepartmentRequest {
+    private Long id;
     private String title;
     private Long headId;
     private Long parentDepartmentId;

@@ -65,8 +65,8 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
-    public SingleDepartmentDto updateDepartment(Long id, DepartmentRequest request) throws NotFoundException {
-        Department department = getDepartmentById(id);
+    public SingleDepartmentDto updateDepartment(DepartmentRequest request) throws NotFoundException {
+        Department department = getDepartmentById(request.getId());
 
         Long headId = department.getHeadId();
         Department parentDepartment = department.getParentDepartment();

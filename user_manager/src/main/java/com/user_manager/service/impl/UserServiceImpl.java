@@ -56,8 +56,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User editUserInfo(Long id, UserInfoDto request) throws NotFoundException {
-        User user = getUserById(id);
+    public User editUserInfo(UserInfoDto request) throws NotFoundException {
+        User user = getUserById(request.getId());
         String firstName = user.getFirstName();
         String lastName = user.getLastName();
         Map<String, String> contacts = user.getContacts();
@@ -88,7 +88,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public String updateUserPosition(Long id, String position) throws NotFoundException {
         User user = getUserById(id);
-        user.setPosition(position);
+        user.setPosition(position.toUpperCase());
         userRepository.save(user);
 
         //notification about user position update
@@ -99,9 +99,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String updateUserRole(Long id, Role role) throws NotFoundException {
+    public String updateUserRole(Long id, String role) throws NotFoundException {
         User user = getUserById(id);
-        user.setRole(role);
+        user.setRole(Role.valueOf(role.toUpperCase()));
         userRepository.save(user);
 
         //notification about user role update

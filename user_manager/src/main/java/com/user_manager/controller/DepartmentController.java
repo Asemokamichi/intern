@@ -4,51 +4,50 @@ import com.user_manager.dto.DepartmentRequest;
 import com.user_manager.dto.DepartmentTreeDto;
 import com.user_manager.dto.SingleDepartmentDto;
 import com.user_manager.exception.NotFoundException;
-import com.user_manager.model.Department;
 import com.user_manager.service.DepartmentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/user-manager")
+@RequestMapping("/api/v1/department")
 @RequiredArgsConstructor
 public class DepartmentController {
     private final DepartmentService departmentService;
 
-        @PostMapping("/department")
+    @PostMapping()
     public ResponseEntity<SingleDepartmentDto> createDepartment(@RequestBody DepartmentRequest request) throws NotFoundException {
         return ResponseEntity.ok(departmentService.createDepartment(request));
     }
 
-    @PutMapping("/department")
-    public ResponseEntity<SingleDepartmentDto> updateDepartment(@RequestParam Long id, @RequestBody DepartmentRequest request) throws NotFoundException {
-        return ResponseEntity.ok(departmentService.updateDepartment(id, request));
+    @PutMapping()
+    public ResponseEntity<SingleDepartmentDto> updateDepartment(@RequestBody DepartmentRequest request) throws NotFoundException {
+        return ResponseEntity.ok(departmentService.updateDepartment(request));
     }
 
-    @PutMapping("/delete-department-head")
-    public ResponseEntity<String> deleteDepartmentHead(@RequestParam Long id) throws NotFoundException {
-        return ResponseEntity.ok(departmentService.deleteDepartmentHead(id));
+    @DeleteMapping("/{departmentId}/head")
+    public ResponseEntity<String> deleteDepartmentHead(@PathVariable Long departmentId) throws NotFoundException {
+        return ResponseEntity.ok(departmentService.deleteDepartmentHead(departmentId));
     }
 
-    @PutMapping("/delete-parent-department")
-    public ResponseEntity<String> deleteParentDepartment(@RequestParam Long id) throws NotFoundException {
-        return ResponseEntity.ok(departmentService.deleteParentDepartment(id));
+    @DeleteMapping("/{departmentId}/parent")
+    public ResponseEntity<String> deleteParentDepartment(@PathVariable Long departmentId) throws NotFoundException {
+        return ResponseEntity.ok(departmentService.deleteParentDepartment(departmentId));
     }
 
-    @DeleteMapping("/delete-department")
-    public ResponseEntity<String> delete(@RequestParam Long id) throws NotFoundException {
-        return ResponseEntity.ok(departmentService.delete(id));
+    @DeleteMapping("/{departmentId}")
+    public ResponseEntity<String> delete(@PathVariable Long departmentId) throws NotFoundException {
+        return ResponseEntity.ok(departmentService.delete(departmentId));
     }
 
-    @GetMapping("/department")
-    public ResponseEntity<SingleDepartmentDto> getDepartment(@RequestParam Long id) throws NotFoundException{
-            return ResponseEntity.ok(departmentService.getDepartment(id));
+    @GetMapping("/{departmentId}")
+    public ResponseEntity<SingleDepartmentDto> getDepartment(@PathVariable Long departmentId) throws NotFoundException{
+            return ResponseEntity.ok(departmentService.getDepartment(departmentId));
     }
 
-    @GetMapping("/departments")
-    public ResponseEntity<DepartmentTreeDto> getDepartmentTree(@RequestParam Long id) throws NotFoundException {
-        return ResponseEntity.ok(departmentService.buildDepartmentTree(id));
+    @GetMapping("/{departmentId}/all")
+    public ResponseEntity<DepartmentTreeDto> getDepartmentTree(@PathVariable Long departmentId) throws NotFoundException {
+        return ResponseEntity.ok(departmentService.buildDepartmentTree(departmentId));
     }
 
 }

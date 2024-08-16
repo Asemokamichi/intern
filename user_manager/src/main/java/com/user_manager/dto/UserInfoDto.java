@@ -12,6 +12,7 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserInfoDto {
+    private Long id;
     private String firstName;
     private String lastName;
     private Map<String, String> contacts;

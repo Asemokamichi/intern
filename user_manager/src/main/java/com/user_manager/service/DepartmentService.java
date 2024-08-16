@@ -9,7 +9,7 @@ import com.user_manager.model.Department;
 public interface DepartmentService {
     Department getDepartmentById(Long id) throws NotFoundException;
     SingleDepartmentDto createDepartment(DepartmentRequest request) throws NotFoundException;
-    SingleDepartmentDto updateDepartment(Long id, DepartmentRequest request) throws NotFoundException;
+    SingleDepartmentDto updateDepartment(DepartmentRequest request) throws NotFoundException;
     String deleteDepartmentHead(Long id) throws NotFoundException;
     String deleteParentDepartment(Long id) throws NotFoundException;
     String delete(Long id) throws NotFoundException;
