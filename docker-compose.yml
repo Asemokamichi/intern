@@ -18,7 +18,7 @@ services:
   postgres_notification:
     image: postgres:14
     environment:
-      POSTGRES_DB: notification_db
+      POSTGRES_DB: notification_manager_db
       POSTGRES_USER: postgres
       POSTGRES_HOST_AUTH_METHOD: trust
     ports:
@@ -70,3 +70,4 @@ services:
       - "8083:8080"
     depends_on:
       - kafka
+      - postgres_user
