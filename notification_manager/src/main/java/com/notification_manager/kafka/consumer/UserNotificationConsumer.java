@@ -49,7 +49,7 @@ public class UserNotificationConsumer {
     @KafkaListener(topics = "user.added.to.department", groupId = "my-group")
     public void userAddedToDepartmentConsumer(String message) {
         UserNotificationDto userNotificationDto = readValue(message);
-        notificationService.notifyUserDepartmentUpdate(userNotificationDto);
+        notificationService.notifyUserAddedToDepartment(userNotificationDto);
     }
 
     @KafkaListener(topics = "user.activated", groupId = "my-group")
