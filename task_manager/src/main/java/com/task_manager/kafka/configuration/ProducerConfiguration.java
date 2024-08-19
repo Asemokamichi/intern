@@ -4,8 +4,20 @@ import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.Map;
+
 @Configuration
 public class ProducerConfiguration {
+    @Bean
+    public NewTopic consumerOffsetsTopic() {
+        return new NewTopic("__consumer_offsets", 50, (short) 1)
+                .configs(Map.of(
+                        "compression.type", "producer",
+                        "cleanup.policy", "compact",
+                        "segment.bytes", "104857600"
+                ));
+    }
+
     @Bean
     public NewTopic taskAssignedTopic() {
         return new NewTopic("task.assigned", 1, (short) 1);
