@@ -67,4 +67,9 @@ public class UserController {
         return ResponseEntity.ok(userService.getAllUserOfDepartment(departmentId));
     }
 
+    @GetMapping("checkAll")
+    public boolean findExistingUserIds(Long[] responsibles){
+        return userService.findExistingUserIds(responsibles);
+    }
+
 }

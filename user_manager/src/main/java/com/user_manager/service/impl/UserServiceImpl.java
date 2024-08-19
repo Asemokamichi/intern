@@ -193,4 +193,10 @@ public class UserServiceImpl implements UserService {
         return userRepository.findById(id).orElseThrow(() -> new NotFoundException("User with " + id + " does not exist"));
 
     }
+
+    @Transactional
+    public boolean findExistingUserIds(Long[] responsibles) {
+        List<Long> userIds = userRepository.findExistingUserIds(responsibles);
+        return userIds.size() == responsibles.length;
+    }
 }

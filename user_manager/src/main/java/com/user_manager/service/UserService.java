@@ -23,7 +23,7 @@ public interface UserService {
     Boolean existsById(Long id);
     User getUserById(Long id) throws NotFoundException;
 
-
+    boolean findExistingUserIds(Long[] responsibles);
 
 
 }
