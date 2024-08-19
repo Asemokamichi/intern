@@ -86,7 +86,7 @@ services:
       dockerfile: Dockerfile
     container_name: user_manager
     ports:
-      - "8083:9000"
+      - "8083:8080"
     depends_on:
       - user_manager_db
       - kafka
