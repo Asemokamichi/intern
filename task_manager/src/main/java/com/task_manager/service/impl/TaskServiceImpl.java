@@ -9,6 +9,7 @@ import com.task_manager.enums.TypeTask;
 import com.task_manager.exceptions.AlreadyExists;
 import com.task_manager.exceptions.InvalidRequest;
 import com.task_manager.exceptions.ResourceNotFound;
+import com.task_manager.feign.user_manager.UserClient;
 import com.task_manager.kafka.producer.NotificationProducer;
 import com.task_manager.repository.TaskRepository;
 import com.task_manager.service.*;
@@ -24,11 +25,13 @@ public class TaskServiceImpl implements TaskService {
     private final TaskRepository taskRepository;
     private final ResolutionService resolutionService;
     private final NotificationProducer notificationProducer;
+    private final UserClient userClient;
 
-    public TaskServiceImpl(TaskRepository taskRepository, ResolutionService resolutionService, NotificationProducer notificationProducer) {
+    public TaskServiceImpl(TaskRepository taskRepository, ResolutionService resolutionService, NotificationProducer notificationProducer, UserClient userClient) {
         this.taskRepository = taskRepository;
         this.resolutionService = resolutionService;
         this.notificationProducer = notificationProducer;
+        this.userClient = userClient;
     }
 
     /*
@@ -48,9 +51,9 @@ public class TaskServiceImpl implements TaskService {
             throw new InvalidRequest("Предоставленные данные неполные, повторите операцию.");
         }
 
-//        if (!userService.findExistingUserIds(createTaskDto.getResponsibles())) {
-//            throw new InvalidRequest("Некоторые из указанных сотрудников не найдены. Пожалуйста, проверьте и повторите запрос.");
-//        }
+        if (!userClient.findExistingUserIds(createTaskDto.getResponsibles())) {
+            throw new InvalidRequest("Некоторые из указанных сотрудников не найдены. Пожалуйста, проверьте и повторите запрос.");
+        }
 
         if (createTaskDto.getType().equals("ASSIGNMENT") && createTaskDto.getResponsibles().length > 1) {
             throw new InvalidRequest("Для задач типа ASSIGNMENT можно назначать только одного сотрудника. Измените тип задачи или разделите задачу для каждого сотрудника.");
