@@ -61,6 +61,8 @@ services:
       - notification_manager_db
       - kafka
       - eureka-server
+    links:
+      - eureka-server
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://notification_manager_db:5432/notification_manager_db
       SPRING_DATASOURCE_USERNAME: postgres
@@ -78,6 +80,8 @@ services:
       - task_manager_db
       - kafka
       - eureka-server
+    links:
+      - eureka-server
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://task_manager_db:5432/task_manager_db
       SPRING_DATASOURCE_USERNAME: postgres
@@ -94,6 +98,8 @@ services:
     depends_on:
       - user_manager_db
       - kafka
+      - eureka-server
+    links:
       - eureka-server
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://user_manager_db:5432/user_manager_db
