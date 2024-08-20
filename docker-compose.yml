@@ -1,0 +1,97 @@
+version: '3.8'
+
+services:
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+
+  zookeeper:
+    image: wurstmeister/zookeeper:3.4.6
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+
+
+  notification_manager_db:
+    image: postgres:15
+    container_name: notification_manager_db
+    environment:
+      POSTGRES_DB: notification_manager_db
+      POSTGRES_USER: postgres
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "5432:5432"
+
+  task_manager_db:
+    image: postgres:15
+    container_name: task_manager_db
+    environment:
+      POSTGRES_DB: task_manager_db
+      POSTGRES_USER: postgres
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "5433:5432"
+
+  user_manager_db:
+    image: postgres:15
+    container_name: user_manager_db
+    environment:
+      POSTGRES_DB: user_manager_db
+      POSTGRES_USER: postgres
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "5434:5432"
+
+  notification_manager:
+    build:
+      context: ./notification_manager
+      dockerfile: Dockerfile
+    container_name: notification_manager
+    ports:
+      - "8081:8080"
+    depends_on:
+      - notification_manager_db
+      - kafka
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://notification_manager_db:5432/notification_manager_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+
+  task_manager:
+    build:
+      context: ./task_manager
+      dockerfile: Dockerfile
+    container_name: task_manager
+    ports:
+      - "8082:8080"
+    depends_on:
+      - task_manager_db
+      - kafka
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://task_manager_db:5432/task_manager_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+
+  user_manager:
+    build:
+      context: ./user_manager
+      dockerfile: Dockerfile
+    container_name: user_manager
+    ports:
+      - "8083:8080"
+    depends_on:
+      - user_manager_db
+      - kafka
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://user_manager_db:5432/user_manager_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+
