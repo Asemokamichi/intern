@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static com.user_manager.utility.TimeFormatter.formatter;
 import static com.user_manager.utility.TimeFormatter.now;
@@ -195,8 +196,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Transactional
-    public boolean findExistingUserIds(Long[] responsibles) {
-        List<Long> userIds = userRepository.findExistingUserIds(responsibles);
-        return userIds.size() == responsibles.length;
+    public Set<Long> findNonExistingUserIds(Set<Long> responsibles) {
+        Set<Long> userIds = userRepository.findExistingUserIds(responsibles);
+        responsibles.removeAll(userIds);
+        return responsibles;
     }
 }

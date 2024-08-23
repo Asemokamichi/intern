@@ -3,11 +3,10 @@ package com.user_manager.service;
 import com.user_manager.dto.UserCreationRequest;
 import com.user_manager.dto.UserInfoDto;
 import com.user_manager.exception.NotFoundException;
-import com.user_manager.enums.Role;
-import com.user_manager.model.Department;
 import com.user_manager.model.User;
 
 import java.util.List;
+import java.util.Set;
 
 public interface UserService {
     User createUser(UserCreationRequest request) throws NotFoundException;
@@ -23,7 +22,7 @@ public interface UserService {
     Boolean existsById(Long id);
     User getUserById(Long id) throws NotFoundException;
 
-    boolean findExistingUserIds(Long[] responsibles);
+    Set<Long> findNonExistingUserIds(Set<Long> responsibles);
 
 
 }

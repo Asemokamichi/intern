@@ -52,8 +52,6 @@ public class FileController {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unsupported file type.");
             }
 
-//check if intern
-
             String uniqueID = UUID.randomUUID().toString();
             String fileName = uniqueID + originalFilename;
 

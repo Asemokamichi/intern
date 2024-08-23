@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -22,5 +23,5 @@ public class GroupUser {
 
     @ElementCollection
     @Column(name = "user_id")
-    private List<Long> users;
+    private Set<Long> users;
 }

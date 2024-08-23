@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/v1/user")
@@ -69,8 +70,8 @@ public class UserController {
     }
 
     @GetMapping("checkAll")
-    public Boolean findExistingUserIds(@RequestParam("responsibles") Long[] responsibles) {
-        return userService.findExistingUserIds(responsibles);
+    public Set<Long> findNonExistingUserIds(@RequestParam("responsibles") Set<Long> responsibles) {
+        return userService.findNonExistingUserIds(responsibles);
     }
 
 }

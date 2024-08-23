@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Set;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -20,5 +21,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<Long> findAllUserIdsOfDepartment(Department department);
 
     @Query("SELECT u.id FROM User u WHERE u.id IN :userIds")
-    List<Long> findExistingUserIds(@Param("userIds") Long[] userIds);
+    Set<Long> findExistingUserIds(@Param("userIds") Set<Long> userIds);
 }
