@@ -18,47 +18,48 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping()
-    public ResponseEntity<User> createUser(@RequestBody  UserCreationRequest request) throws NotFoundException {
+    public ResponseEntity<User> createUser(@RequestBody UserCreationRequest request) throws NotFoundException {
         return ResponseEntity.ok(userService.createUser(request));
     }
 
     @PutMapping()
-    public ResponseEntity<User> editUser(@RequestBody UserInfoDto request) throws NotFoundException{
+    public ResponseEntity<User> editUser(@RequestBody UserInfoDto request) throws NotFoundException {
         return ResponseEntity.ok(userService.editUserInfo(request));
     }
 
     @PutMapping("/{userId}/position/{position}")
-    public ResponseEntity<String> updateUserPosition(@PathVariable Long userId, @PathVariable String position) throws NotFoundException{
+    public ResponseEntity<String> updateUserPosition(@PathVariable Long userId, @PathVariable String position) throws NotFoundException {
         return ResponseEntity.ok(userService.updateUserPosition(userId, position));
 
     }
+
     @PutMapping("/{userId}/role/{role}")
-    public ResponseEntity<String> updateUserRole(@PathVariable Long userId, @PathVariable String role) throws NotFoundException{
+    public ResponseEntity<String> updateUserRole(@PathVariable Long userId, @PathVariable String role) throws NotFoundException {
         return ResponseEntity.ok(userService.updateUserRole(userId, role));
     }
 
     @PutMapping("/{userId}/department/{departmentId}")
-    public ResponseEntity<String> updateUserDepartment(@PathVariable Long userId, @PathVariable Long departmentId) throws NotFoundException{
+    public ResponseEntity<String> updateUserDepartment(@PathVariable Long userId, @PathVariable Long departmentId) throws NotFoundException {
         return ResponseEntity.ok(userService.updateUserDepartment(userId, departmentId));
     }
 
     @PutMapping("/{userId}/activate")
-    public ResponseEntity<String> activateUser(@PathVariable Long userId) throws NotFoundException{
+    public ResponseEntity<String> activateUser(@PathVariable Long userId) throws NotFoundException {
         return ResponseEntity.ok(userService.activateUser(userId));
     }
 
     @PutMapping("/{userId}/deactivate")
-    public ResponseEntity<String> deactivateUser(@PathVariable Long userId) throws NotFoundException{
+    public ResponseEntity<String> deactivateUser(@PathVariable Long userId) throws NotFoundException {
         return ResponseEntity.ok(userService.deactivateUser(userId));
     }
 
     @DeleteMapping("/{userId}")
-    public ResponseEntity<String> delete(@PathVariable Long userId) throws NotFoundException{
+    public ResponseEntity<String> delete(@PathVariable Long userId) throws NotFoundException {
         return ResponseEntity.ok(userService.delete(userId));
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<User> getInfo(@PathVariable Long userId) throws NotFoundException{
+    public ResponseEntity<User> getInfo(@PathVariable Long userId) throws NotFoundException {
         return ResponseEntity.ok(userService.getInfo(userId));
     }
 
@@ -68,7 +69,7 @@ public class UserController {
     }
 
     @GetMapping("checkAll")
-    public boolean findExistingUserIds(Long[] responsibles){
+    public Boolean findExistingUserIds(@RequestParam("responsibles") Long[] responsibles) {
         return userService.findExistingUserIds(responsibles);
     }
 

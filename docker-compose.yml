@@ -60,10 +60,14 @@ services:
     depends_on:
       - notification_manager_db
       - kafka
+      - eureka-server
+    links:
+      - eureka-server
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://notification_manager_db:5432/notification_manager_db
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://localhost:8761/eureka
 
   task_manager:
     build:
@@ -75,10 +79,14 @@ services:
     depends_on:
       - task_manager_db
       - kafka
+      - eureka-server
+    links:
+      - eureka-server
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://task_manager_db:5432/task_manager_db
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://localhost:8761/eureka
 
   user_manager:
     build:
@@ -90,8 +98,24 @@ services:
     depends_on:
       - user_manager_db
       - kafka
+      - eureka-server
+    links:
+      - eureka-server
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://user_manager_db:5432/user_manager_db
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://localhost:8761/eureka
+
+
+  eureka-server:
+    image: eureka-server:latest
+    build:
+      context: ./eureka_server
+      dockerfile: Dockerfile
+    container_name: eureka_server
+    ports:
+      - "8761:8761"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
 
