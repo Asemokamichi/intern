@@ -42,7 +42,7 @@ public class FileController {
     );
 
     @PostMapping("/upload")
-    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file){
+    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file, Long groupId){
         try{
             String bucketName = "user1";
             String contentType = file.getContentType();
@@ -51,6 +51,8 @@ public class FileController {
             if (!SUPPORTED_CONTENT_TYPES.contains(contentType)) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unsupported file type.");
             }
+
+//check if intern
 
             String uniqueID = UUID.randomUUID().toString();
             String fileName = uniqueID + originalFilename;

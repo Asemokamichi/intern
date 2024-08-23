@@ -14,4 +14,5 @@ public class MinioConfig {
                 .credentials("minioadmin", "minioadmin")
                 .build();
     }
+
 }
