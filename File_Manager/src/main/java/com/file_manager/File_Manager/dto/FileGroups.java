@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -25,6 +25,6 @@ public class FileGroups {
     @ElementCollection
     @CollectionTable(name = "file_groups_map", joinColumns = @JoinColumn(name = "file_id"))
     @Column(name = "group_id")
-    private List<Long> groups;
+    private Set<Long> groups;
 
 }

@@ -17,33 +17,44 @@ public class GroupUserService {
     @Autowired
     private UserClient userClient;
 
-    public void addUserToGroup(Long groupId, Set<Long> userIds) {
+    public GroupUser addUserToGroup(Long groupId, Set<Long> userIds) {
         try {
             Set<Long> nonExistentUsers = userClient.findNonExistingUserIds(userIds);
 
-            if(!nonExistentUsers.isEmpty()){
-                throw new RuntimeException("Users with these IDs were not found: " + nonExistentUsers);
+            if (!nonExistentUsers.isEmpty()) {
+                if (nonExistentUsers.size() == userIds.size()) {
+                    throw new RuntimeException("None of the provided users exist: " + nonExistentUsers);
+                } else {
+                    System.out.println("Warning: The following users were not found: " + nonExistentUsers);
+                }
             }
 
             GroupUser groupUsers = groupUserRepository.findById(groupId)
                     .orElseThrow(() -> new RuntimeException("Group not found"));
 
+
             Set<Long> existingUsers = new HashSet<>(groupUsers.getUsers());
             existingUsers.addAll(userIds);
+            existingUsers.removeAll(nonExistentUsers);
+
             groupUsers.setUsers(existingUsers);
-            groupUserRepository.save(groupUsers);
+            return groupUserRepository.save(groupUsers);
         }
         catch (Exception e){
             throw new RuntimeException("Failed to add users: " + e.getMessage());
         }
     }
 
-    public void removeUserFromGroup(Long groupId, Set<Long> userIds) {
+    public GroupUser removeUserFromGroup(Long groupId, Set<Long> userIds) {
         try {
             Set<Long> nonExistentUsers = userClient.findNonExistingUserIds(userIds);
 
-            if(!nonExistentUsers.isEmpty()){
-                throw new RuntimeException("Users with these IDs were not found: " + nonExistentUsers);
+            if (!nonExistentUsers.isEmpty()) {
+                if (nonExistentUsers.size() == userIds.size()) {
+                    throw new RuntimeException("None of the provided users exist: " + nonExistentUsers);
+                } else {
+                    System.out.println("Warning: The following users were not found: " + nonExistentUsers);
+                }
             }
 
             GroupUser groupUsers = groupUserRepository.findById(groupId)
@@ -51,8 +62,9 @@ public class GroupUserService {
 
             Set<Long> existingUsers = new HashSet<>(groupUsers.getUsers());
             existingUsers.removeAll(userIds);
+
             groupUsers.setUsers(existingUsers);
-            groupUserRepository.save(groupUsers);
+            return groupUserRepository.save(groupUsers);
         }
         catch (Exception e){
             throw new RuntimeException("Failed to remove users: " + e.getMessage());

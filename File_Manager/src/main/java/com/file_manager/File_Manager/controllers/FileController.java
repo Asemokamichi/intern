@@ -1,5 +1,9 @@
 package com.file_manager.File_Manager.controllers;
 
+import com.file_manager.File_Manager.dto.FileGroups;
+import com.file_manager.File_Manager.enums.Permission;
+import com.file_manager.File_Manager.services.FileGroupService;
+import com.file_manager.File_Manager.services.GroupService;
 import com.file_manager.File_Manager.services.KafkaProducerService;
 import com.file_manager.File_Manager.Topics.KafkaTopics;
 import org.springframework.http.*;
@@ -12,18 +16,24 @@ import java.io.InputStream;
 import java.net.URLConnection;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/files")
 public class FileController {
 
-    private MinioService minioService;
-    private KafkaProducerService kafkaProducerService;
+    private final MinioService minioService;
+    private final KafkaProducerService kafkaProducerService;
+    private final GroupService groupService;
+    private final FileGroupService fileGroupService;
 
-    public FileController(MinioService minioService, KafkaProducerService kafkaProducerService) {
+    public FileController(MinioService minioService, KafkaProducerService kafkaProducerService,
+                          GroupService groupService, FileGroupService fileGroupService) {
         this.minioService = minioService;
         this.kafkaProducerService = kafkaProducerService;
+        this.groupService = groupService;
+        this.fileGroupService = fileGroupService;
     }
 
 
@@ -44,6 +54,7 @@ public class FileController {
     @PostMapping("/upload")
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file, Long groupId){
         try{
+            checkPermission(groupId, Permission.WRITE);
             String bucketName = "user1";
             String contentType = file.getContentType();
             String originalFilename = file.getOriginalFilename();
@@ -57,6 +68,8 @@ public class FileController {
 
             minioService.uploadFile(bucketName, fileName, file.getBytes(), contentType);
 
+            fileGroupService.giveAccessToFile(uniqueID, Set.of(groupId));
+
             String message = "File " + originalFilename + " has been uploaded with ID: " + uniqueID;
             kafkaProducerService.sendNotification(KafkaTopics.FILE_UPLOAD_TOPIC, message);
 
@@ -69,8 +82,11 @@ public class FileController {
     }
 
     @GetMapping("/download/{id}")
-    public ResponseEntity<byte[]> downloadFileById(@PathVariable String id) {
+    public ResponseEntity<byte[]> downloadFileById(@PathVariable String id, Long groupId) {
         try {
+
+            checkPermission(groupId, Permission.READ);
+
             String bucketName = "user1";
 
             String fileName = minioService.findFileNameById(bucketName, id);
@@ -98,8 +114,11 @@ public class FileController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<String> updateFile(@PathVariable String id, @RequestParam("file") MultipartFile newFile){
+    public ResponseEntity<String> updateFile(@PathVariable String id, @RequestParam("file") MultipartFile newFile, Long groupId){
         try{
+
+            checkPermission(groupId, Permission.WRITE);
+
             String bucketName = "user1";
             String contentType = newFile.getContentType();
 
@@ -124,8 +143,10 @@ public class FileController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteFile(@PathVariable String id){
+    public ResponseEntity<String> deleteFile(@PathVariable String id, Long groupId){
         try{
+            checkPermission(groupId, Permission.DELETE);
+
             String bucketName = "user1";
             minioService.deleteFile(bucketName, id);
 
@@ -136,6 +157,14 @@ public class FileController {
         }
         catch (Exception e){
             return ResponseEntity.status(500).body("File deletion failed");
+        }
+    }
+
+    private void checkPermission(Long groupId, Permission requiredPermission){
+        List<Permission> permissions = groupService.getPermissionsForGroup(groupId);
+
+        if (!permissions.contains(requiredPermission)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Insufficient permissions");
         }
     }
 }

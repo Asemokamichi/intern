@@ -1,5 +1,6 @@
 package com.file_manager.File_Manager.dto;
 
+import com.file_manager.File_Manager.enums.Permission;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,7 +8,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
-import java.util.UUID;
 
 
 @Getter

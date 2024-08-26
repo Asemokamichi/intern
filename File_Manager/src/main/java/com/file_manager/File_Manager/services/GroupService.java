@@ -1,13 +1,12 @@
 package com.file_manager.File_Manager.services;
 
 import com.file_manager.File_Manager.dto.Group;
-import com.file_manager.File_Manager.dto.Permission;
+import com.file_manager.File_Manager.enums.Permission;
 import com.file_manager.File_Manager.repositories.GroupRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class GroupService {
@@ -40,9 +39,17 @@ public class GroupService {
 
     public void deleteGroup(Long groupId) {
         try {
+            groupRepository.findById(groupId)
+                    .orElseThrow(() -> new RuntimeException("Group not found"));
             groupRepository.deleteById(groupId);
         } catch (Exception e) {
             throw new RuntimeException("Failed to delete group: " + e.getMessage());
         }
+    }
+
+    public List<Permission> getPermissionsForGroup(Long groupId){
+        return groupRepository.findById(groupId)
+                .map(Group::getPermissions)
+                .orElseThrow(() -> new RuntimeException("Group not found"));
     }
 }
