@@ -1,10 +1,11 @@
 package com.file_manager.services;
 
-import com.file_manager.File_Manager.dto.Group;
-import com.file_manager.File_Manager.enums.Permission;
-import com.file_manager.File_Manager.repositories.GroupRepository;
+import com.file_manager.repositories.GroupRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.file_manager.dto.Group;
+import com.file_manager.enums.Permission;
+
 
 import java.util.List;
 

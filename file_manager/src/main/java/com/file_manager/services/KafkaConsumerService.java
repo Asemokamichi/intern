@@ -1,6 +1,6 @@
 package com.file_manager.services;
 
-import com.file_manager.File_Manager.Topics.KafkaTopics;
+import com.file_manager.Topics.KafkaTopics;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 

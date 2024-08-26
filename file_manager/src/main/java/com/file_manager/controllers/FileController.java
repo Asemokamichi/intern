@@ -1,16 +1,16 @@
 package com.file_manager.controllers;
 
-import com.file_manager.File_Manager.dto.FileGroups;
-import com.file_manager.File_Manager.enums.Permission;
-import com.file_manager.File_Manager.services.FileGroupService;
-import com.file_manager.File_Manager.services.GroupService;
-import com.file_manager.File_Manager.services.KafkaProducerService;
-import com.file_manager.File_Manager.Topics.KafkaTopics;
+
+import com.file_manager.Topics.KafkaTopics;
+import com.file_manager.enums.Permission;
+import com.file_manager.services.FileGroupService;
+import com.file_manager.services.GroupService;
+import com.file_manager.services.KafkaProducerService;
+import com.file_manager.services.MinioService;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
-import com.file_manager.File_Manager.services.MinioService;
 
 import java.io.InputStream;
 import java.net.URLConnection;

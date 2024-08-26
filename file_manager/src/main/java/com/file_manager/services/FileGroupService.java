@@ -1,8 +1,9 @@
 package com.file_manager.services;
 
-import com.file_manager.File_Manager.dto.FileGroups;
-import com.file_manager.File_Manager.repositories.FileGroupRepository;
-import com.file_manager.File_Manager.repositories.GroupRepository;
+
+import com.file_manager.dto.FileGroups;
+import com.file_manager.repositories.FileGroupRepository;
+import com.file_manager.repositories.GroupRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

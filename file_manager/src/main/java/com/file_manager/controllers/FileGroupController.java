@@ -1,8 +1,8 @@
 package com.file_manager.controllers;
 
-import com.file_manager.File_Manager.dto.FileGroups;
-import com.file_manager.File_Manager.repositories.FileGroupRepository;
-import com.file_manager.File_Manager.services.FileGroupService;
+
+import com.file_manager.dto.FileGroups;
+import com.file_manager.services.FileGroupService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

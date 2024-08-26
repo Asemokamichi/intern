@@ -1,7 +1,7 @@
 package com.file_manager.controllers;
 
-import com.file_manager.File_Manager.dto.GroupUser;
-import com.file_manager.File_Manager.services.GroupUserService;
+import com.file_manager.dto.GroupUser;
+import com.file_manager.services.GroupUserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

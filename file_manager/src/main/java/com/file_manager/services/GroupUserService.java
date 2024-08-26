@@ -1,8 +1,9 @@
 package com.file_manager.services;
 
-import com.file_manager.File_Manager.dto.GroupUser;
-import com.file_manager.File_Manager.feign_client.UserClient;
-import com.file_manager.File_Manager.repositories.GroupUserRepository;
+
+import com.file_manager.dto.GroupUser;
+import com.file_manager.feign_client.UserClient;
+import com.file_manager.repositories.GroupUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,12 +15,13 @@ public class GroupUserService {
     @Autowired
     private GroupUserRepository groupUserRepository;
 
-    @Autowired
-    private UserClient userClient;
+//    @Autowired
+//    private UserClient userClient;
 
     public GroupUser addUserToGroup(Long groupId, Set<Long> userIds) {
         try {
-            Set<Long> nonExistentUsers = userClient.findNonExistingUserIds(userIds);
+//            Set<Long> nonExistentUsers = userClient.(userIds);
+            Set<Long> nonExistentUsers = null;
 
             if (!nonExistentUsers.isEmpty()) {
                 if (nonExistentUsers.size() == userIds.size()) {
@@ -47,7 +49,8 @@ public class GroupUserService {
 
     public GroupUser removeUserFromGroup(Long groupId, Set<Long> userIds) {
         try {
-            Set<Long> nonExistentUsers = userClient.findNonExistingUserIds(userIds);
+//            Set<Long> nonExistentUsers = userClient.findNonExistingUserIds(userIds);
+            Set<Long> nonExistentUsers = null;
 
             if (!nonExistentUsers.isEmpty()) {
                 if (nonExistentUsers.size() == userIds.size()) {

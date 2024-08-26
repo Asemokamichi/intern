@@ -1,12 +1,13 @@
 package com.file_manager.controllers;
 
-import com.file_manager.File_Manager.dto.Group;
-import com.file_manager.File_Manager.enums.Permission;
-import com.file_manager.File_Manager.services.GroupService;
+
+import com.file_manager.dto.Group;
+import com.file_manager.services.GroupService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import com.file_manager.enums.Permission;
 import java.util.List;
 
 @AllArgsConstructor
@@ -16,7 +17,7 @@ public class GroupController {
 
     private final GroupService groupService;
 
-    @PostMapping("/create")
+    @PostMapping(path = "/create", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Group> createGroup(@RequestParam String name, @RequestBody List<Permission> permissions){
         Group group = groupService.createGroup(name, permissions);
         return ResponseEntity.ok(group);

@@ -1,11 +1,11 @@
 package com.file_manager.dto;
 
-import com.file_manager.File_Manager.enums.Permission;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import com.file_manager.enums.Permission;
 
 import java.util.List;
 
